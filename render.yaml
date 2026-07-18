@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: stip-bsnl
+    env: python
+    buildCommand: "pip install -r requirements.txt && python db_init.py"
+    startCommand: "gunicorn app:app"
+    plan: free
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+      - key: SECRET_KEY
+        generateValue: true

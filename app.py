@@ -15,7 +15,7 @@ from datetime import datetime
 
 # Initialize Flask App
 app = Flask(__name__)
-app.secret_key = 'stip_secret_key_bsnl_2026'
+app.secret_key = os.environ.get('SECRET_KEY', 'stip_secret_key_bsnl_2026')
 
 # Paths
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
