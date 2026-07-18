@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+
+{% block title %}Analytics - Smart Telecom Infrastructure Planner{% endblock %}
+
+{% block content %}
+<div class="charts-grid">
+    <!-- Top 10 Priority Areas -->
+    <div class="stip-card">
+        <div class="card-title-container">
+            <h3><i class="fa-solid fa-chart-bar" style="color: var(--accent-orange); margin-right: 8px;"></i> Top 10 Priority Areas</h3>
+        </div>
+        <div style="height: 320px; position: relative;">
+            <canvas id="topPriorityChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Network Technology Distribution -->
+    <div class="stip-card">
+        <div class="card-title-container">
+            <h3><i class="fa-solid fa-chart-pie" style="color: var(--accent-orange); margin-right: 8px;"></i> Technology Distribution (BTS)</h3>
+        </div>
+        <div style="height: 320px; position: relative; display: flex; justify-content: center;">
+            <canvas id="techDistributionChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Priority Category Distribution -->
+    <div class="stip-card">
+        <div class="card-title-container">
+            <h3><i class="fa-solid fa-chart-gantt" style="color: var(--accent-orange); margin-right: 8px;"></i> Circle Priority Shares</h3>
+        </div>
+        <div style="height: 320px; position: relative; display: flex; justify-content: center;">
+            <canvas id="categoryShareChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Population vs Priority Scatter -->
+    <div class="stip-card">
+        <div class="card-title-container">
+            <h3><i class="fa-solid fa-chart-line" style="color: var(--accent-orange); margin-right: 8px;"></i> Population vs. TIPI Priority</h3>
+        </div>
+        <div style="height: 320px; position: relative;">
+            <canvas id="scatterChart"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    fetch('/api/chart-data')
+        .then(response => response.json())
+        .then(data => {
+            initTopPriorityChart(data.top_10);
+            initTechChart(data.net_types);
+            initCategoryChart(data.categories);
+            initScatterChart(data.scatter);
+        })
+        .catch(err => console.error("Error loading chart data:", err));
+});
+
+function initTopPriorityChart(top10) {
+    const ctx = document.getElementById('topPriorityChart').getContext('2d');
+    const labels = top10.map(item => item.name);
+    const scores = top10.map(item => item.score);
+    
+    // Assign colors dynamically based on category
+    const colors = top10.map(item => {
+        if (item.category === 'High') return '#EF4444'; // Crimson
+        if (item.category === 'Medium') return '#F59E0B'; // Amber
+        return '#10B981'; // Emerald
+    });
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'TIPI Score',
+                data: scores,
+                backgroundColor: colors,
+                borderColor: colors.map(c => c + 'CC'),
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    min: 0,
+                    max: 100,
+                    grid: { color: '#E2E8F0' },
+                    ticks: { color: '#718096' }
+                },
+                y: {
+                    grid: { display: false },
+                    ticks: { color: '#4A5568', font: { weight: 'bold' } }
+                }
+            }
+        }
+    });
+}
+
+function initTechChart(netTypes) {
+    const ctx = document.getElementById('techDistributionChart').getContext('2d');
+    const labels = Object.keys(netTypes);
+    const counts = Object.values(netTypes);
+
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: counts,
+                backgroundColor: ['#8B5CF6', '#3B82F6', '#06B6D4', '#6B7280'], // 5G, 4G, 3G, 2G colors
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { boxWidth: 15, padding: 15, color: '#4A5568', font: { weight: 'bold' } }
+                }
+            },
+            cutout: '60%'
+        }
+    });
+}
+
+function initCategoryChart(categories) {
+    const ctx = document.getElementById('categoryShareChart').getContext('2d');
+    const labels = Object.keys(categories);
+    const counts = Object.values(categories);
+
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: counts,
+                backgroundColor: ['#EF4444', '#F59E0B', '#10B981'], // High, Medium, Low colors
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { boxWidth: 15, padding: 15, color: '#4A5568', font: { weight: 'bold' } }
+                }
+            }
+        }
+    });
+}
+
+function initScatterChart(scatterData) {
+    const ctx = document.getElementById('scatterChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'scatter',
+        data: {
+            datasets: [{
+                label: 'Circles',
+                data: scatterData,
+                backgroundColor: '#EE6C4D',
+                borderColor: '#EE6C4D',
+                pointRadius: 6,
+                pointHoverRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const p = context.raw;
+                            return `${p.label} (Pop: ${p.x.toLocaleString()}, Score: ${p.y})`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: { display: true, text: 'Population', color: '#4A5568', font: { weight: 'bold' } },
+                    grid: { color: '#E2E8F0' },
+                    ticks: { color: '#718096' }
+                },
+                y: {
+                    title: { display: true, text: 'TIPI Index (0-100)', color: '#4A5568', font: { weight: 'bold' } },
+                    min: 0,
+                    max: 100,
+                    grid: { color: '#E2E8F0' },
+                    ticks: { color: '#718096' }
+                }
+            }
+        }
+    });
+}
+</script>
+{% endblock %}

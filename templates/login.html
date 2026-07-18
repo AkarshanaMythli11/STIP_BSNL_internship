@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STIP - Engineer Login</title>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="login-body">
+    <div class="login-card">
+        <div class="login-header">
+            <i class="fa-solid fa-tower-broadcast"></i>
+            <h2>BSNL STIP Portal</h2>
+            <p>Authorized Engineer Login</p>
+        </div>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('login') }}" method="POST">
+            <div class="form-group">
+                <label for="username" class="form-label">Username</label>
+                <div style="position: relative;">
+                    <i class="fa-solid fa-user" style="position: absolute; left: 12px; top: 12px; color: var(--text-muted);"></i>
+                    <input type="text" id="username" name="username" class="form-control-stip" placeholder="Enter username" style="padding-left: 2.25rem;" required>
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="password" class="form-label">Password</label>
+                <div style="position: relative;">
+                    <i class="fa-solid fa-lock" style="position: absolute; left: 12px; top: 12px; color: var(--text-muted);"></i>
+                    <input type="password" id="password" name="password" class="form-control-stip" placeholder="Enter password" style="padding-left: 2.25rem;" required>
+                </div>
+            </div>
+            <button type="submit" class="btn-stip btn-accent-stip" style="width: 100%; padding: 0.75rem; font-size: 1rem; border-radius: 8px;">
+                <i class="fa-solid fa-right-to-bracket"></i> Login
+            </button>
+        </form>
+
+        <div style="margin-top: 1.5rem; padding: 0.75rem; background-color: var(--bg-light); border-radius: 8px; border-left: 3px solid var(--primary-medium); font-size: 0.8rem; color: var(--text-muted);">
+            <strong style="color: var(--primary-dark);"><i class="fa-solid fa-circle-info"></i> Simulation Mode Credentials:</strong>
+            <div style="margin-top: 0.25rem;">
+                Username: <code>admin</code><br>
+                Password: <code>admin123</code>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <a href="{{ url_for('index') }}" style="color: var(--primary-medium); text-decoration: none; font-size: 0.85rem; font-weight: 500;">
+                <i class="fa-solid fa-arrow-left"></i> Back to Homepage
+            </a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STIP - {% block title %}{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-tower-broadcast"></i>
+                <div>
+                    <div class="logo-text">STIP</div>
+                    <div class="logo-sub">BSNL Portal</div>
+                </div>
+            </div>
+            <ul class="sidebar-menu">
+                {% if session.get('user_id') %}
+                <li>
+                    <a href="{{ url_for('dashboard') }}" class="sidebar-link {% if request.path == url_for('dashboard') %}active{% endif %}">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('add_area') }}" class="sidebar-link {% if request.path == url_for('add_area') %}active{% endif %}">
+                        <i class="fa-solid fa-plus-circle"></i>
+                        <span>Add Area</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('view_areas') }}" class="sidebar-link {% if request.path == url_for('view_areas') or '/edit/' in request.path %}active{% endif %}">
+                        <i class="fa-solid fa-list-check"></i>
+                        <span>View Areas</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('ranking') }}" class="sidebar-link {% if request.path == url_for('ranking') %}active{% endif %}">
+                        <i class="fa-solid fa-ranking-star"></i>
+                        <span>Rankings</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('analytics') }}" class="sidebar-link {% if request.path == url_for('analytics') %}active{% endif %}">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>Analytics</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('reports') }}" class="sidebar-link {% if request.path == url_for('reports') %}active{% endif %}">
+                        <i class="fa-solid fa-file-invoice"></i>
+                        <span>Reports</span>
+                    </a>
+                </li>
+                {% else %}
+                <li>
+                    <a href="{{ url_for('index') }}" class="sidebar-link {% if request.path == url_for('index') or request.path == '/' %}active{% endif %}">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('login') }}" class="sidebar-link {% if request.path == url_for('login') %}active{% endif %}">
+                        <i class="fa-solid fa-sign-in-alt"></i>
+                        <span>Login</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+            <div class="sidebar-footer">
+                <p>STIP v2.0</p>
+                <p>&copy; 2026 BSNL Planning</p>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <div class="main-wrapper">
+            <!-- Header Navbar -->
+            <header class="top-header">
+                <div class="header-title-section">
+                    <h2>Smart Telecom Infrastructure Planner (STIP)</h2>
+                </div>
+                <div class="header-user-section">
+                    <span style="font-size: 0.8rem; color: #10B981; font-weight: 600; background-color: rgba(16, 185, 129, 0.1); padding: 0.25rem 0.6rem; border-radius: 12px;">
+                        <i class="fa-solid fa-circle-nodes" style="margin-right: 4px;"></i> Circle Server: ACTIVE
+                    </span>
+                    {% if session.get('user_id') %}
+                    <div class="user-badge">
+                        <i class="fa-solid fa-user-shield"></i>
+                        <span>{{ session.get('username') }}</span>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="logout-btn-header">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('login') }}" class="btn-stip btn-accent-stip btn-sm-stip">
+                        <i class="fa-solid fa-sign-in-alt"></i> Engineer Portal
+                    </a>
+                    {% endif %}
+                </div>
+            </header>
+
+            <!-- Main Page Content -->
+            <main class="page-container">
+                <!-- Notifications panel -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {% if category == 'success' %}
+                                    <i class="fa-solid fa-check-circle"></i>
+                                {% elif category == 'danger' %}
+                                    <i class="fa-solid fa-exclamation-triangle"></i>
+                                {% else %}
+                                    <i class="fa-solid fa-info-circle"></i>
+                                {% endif %}
+                                <span>{{ message }}</span>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+            </main>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <p>Developed for Telecommunication Circle Expansion Planning. All rights reserved &copy; 2026.</p>
+            </footer>
+        </div>
+    </div>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

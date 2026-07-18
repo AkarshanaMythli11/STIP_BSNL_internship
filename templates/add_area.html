@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if area %}Edit Area - {{ area.name }}{% else %}Add Area{% endif %} - Smart Telecom Infrastructure Planner{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div class="stip-card">
+        <div class="card-title-container">
+            <h3>
+                <i class="fa-solid {% if area %}fa-pen-to-square{% else %}fa-plus-circle{% endif %}" style="color: var(--accent-orange); margin-right: 8px;"></i>
+                {% if area %}Edit Telecom Circle: {{ area.name }}{% else %}Register New Telecom Circle{% endif %}
+            </h3>
+            <a href="{{ url_for('view_areas') }}" class="btn-stip btn-outline-stip btn-sm-stip">
+                <i class="fa-solid fa-arrow-left"></i> Back to Circles List
+            </a>
+        </div>
+        
+        <form action="{% if area %}{{ url_for('edit_area', id=area.id) }}{% else %}{{ url_for('add_area') }}{% endif %}" method="POST">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <!-- Column 1 -->
+                <div>
+                    <div class="form-group">
+                        <label for="name" class="form-label">Area / Circle Name</label>
+                        <input type="text" id="name" name="name" class="form-control-stip" placeholder="e.g. Maharashtra Circle - Jalgaon Rural" value="{% if area %}{{ area.name }}{% endif %}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="population" class="form-label">Population</label>
+                        <input type="number" id="population" name="population" class="form-control-stip" placeholder="e.g. 45000" min="0" value="{% if area %}{{ area.population }}{% endif %}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signal_strength" class="form-label">Signal Strength (1 - 5)</label>
+                        <select id="signal_strength" name="signal_strength" class="form-control-stip" required>
+                            <option value="" disabled selected>Select Signal Quality</option>
+                            <option value="1" {% if area and area.signal_strength == 1 %}selected{% endif %}>1 - Extremely Poor Coverage</option>
+                            <option value="2" {% if area and area.signal_strength == 2 %}selected{% endif %}>2 - Weak Signal (Coverage gaps)</option>
+                            <option value="3" {% if area and area.signal_strength == 3 %}selected{% endif %}>3 - Adequate Signal (Standard)</option>
+                            <option value="4" {% if area and area.signal_strength == 4 %}selected{% endif %}>4 - Strong Signal (Good)</option>
+                            <option value="5" {% if area and area.signal_strength == 5 %}selected{% endif %}>5 - Excellent Coverage (Full signal)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="distance" class="form-label">Distance from Nearest Cell Site (km)</label>
+                        <input type="number" step="0.1" id="distance" name="distance" class="form-control-stip" placeholder="e.g. 4.8" min="0" value="{% if area %}{{ area.distance }}{% endif %}" required>
+                    </div>
+                </div>
+                
+                <!-- Column 2 -->
+                <div>
+                    <div class="form-group">
+                        <label for="internet_users" class="form-label">Internet Penetration (%)</label>
+                        <input type="number" id="internet_users" name="internet_users" class="form-control-stip" placeholder="e.g. 65" min="0" max="100" value="{% if area %}{{ area.internet_users }}{% endif %}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="complaints" class="form-label">Monthly Customer Complaints</label>
+                        <input type="number" id="complaints" name="complaints" class="form-control-stip" placeholder="e.g. 75" min="0" value="{% if area %}{{ area.complaints }}{% endif %}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fiber" class="form-label">Fiber Backhaul Available</label>
+                        <select id="fiber" name="fiber" class="form-control-stip" required>
+                            <option value="" disabled selected>Select Fiber Status</option>
+                            <option value="Yes" {% if area and area.fiber == 'Yes' %}selected{% endif %}>Yes (Fiber backhaul deployed)</option>
+                            <option value="No" {% if area and area.fiber == 'No' %}selected{% endif %}>No (Microwave link or copper line only)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="network_type" class="form-label">Current Transceiver Technology (BTS)</label>
+                        <select id="network_type" name="network_type" class="form-control-stip" required>
+                            <option value="" disabled selected>Select Tech</option>
+                            <option value="2G" {% if area and area.network_type == '2G' %}selected{% endif %}>2G (Legacy GSM)</option>
+                            <option value="3G" {% if area and area.network_type == '3G' %}selected{% endif %}>3G (WCDMA/HSPA)</option>
+                            <option value="4G" {% if area and area.network_type == '4G' %}selected{% endif %}>4G (LTE coverage)</option>
+                            <option value="5G" {% if area and area.network_type == '5G' %}selected{% endif %}>5G (New Radio)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="border-top: 1px solid var(--border-color); padding-top: 1.25rem; display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
+                <button type="reset" class="btn-stip btn-outline-stip">
+                    <i class="fa-solid fa-rotate-left"></i> Reset Form
+                </button>
+                <button type="submit" class="btn-stip btn-accent-stip" style="padding-left: 2rem; padding-right: 2rem;">
+                    <i class="fa-solid fa-save"></i> {% if area %}Save Changes{% else %}Calculate & Save{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,3824 @@
+========================================================================
+   SMART TELECOM INFRASTRUCTURE PLANNER (STIP) SOURCE CODE BUNDLE       
+========================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+FILE: requirements.txt
+################################################################################
+
+Flask==3.0.3
+pandas==2.2.2
+openpyxl==3.1.5
+reportlab==4.2.2
+werkzeug==3.0.3
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+FILE: .gitignore
+################################################################################
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+.env/
+.venv/
+
+# SQLite database (will be auto-generated on first run)
+database.db
+
+# Uploaded Excel files
+uploads/
+
+# Generated reports
+reports/
+
+# Environment variables
+.env
+*.env
+
+# IDE/Editor folders
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+FILE: README.md
+################################################################################
+
+# 📡 Smart Telecom Infrastructure Planner (STIP)
+
+> A professional, web-based Decision Support System for Telecom Engineers to identify and prioritize areas requiring network infrastructure upgrades — built as an operational planning tool aligned with BSNL standards.
+
+---
+
+## 🔍 Abstract
+
+The rapid growth of telecommunication services has increased the demand for efficient planning and optimal utilization of network infrastructure. Telecom service providers face challenges in deciding which geographical areas should be prioritized for network expansion or infrastructure upgrades due to limited resources and increasing customer demands.
+
+**STIP** automates this decision-making process by computing a **Telecom Infrastructure Priority Index (TIPI)** for each registered circle using a multi-criteria weighted scoring algorithm. The system ranks areas from highest to lowest priority and generates detailed reports and visual analytics to support engineering decisions.
+
+---
+
+## 🌐 Website Architecture
+
+```
+Home (Landing Page)
+   │
+   ▼
+Login (Engineer Portal)
+   │
+   ▼
+Dashboard
+   │
+   ├── Add Area            (Single-circle registration form)
+   ├── View Areas          (Searchable/filterable table + Edit/Delete/View modal)
+   ├── Rankings            (Sorted TIPI list + BSNL Recommendations)
+   ├── Analytics           (4 Chart.js graphs)
+   ├── Reports             (Excel + PDF downloads + Print Manager)
+   └── Logout
+```
+
+---
+
+## 📐 TIPI Score Formula
+
+The **Telecom Infrastructure Priority Index (TIPI)** ranges from 0–100:
+
+```
+TIPI = 0.20×Signal + 0.20×Complaints + 0.15×Population + 0.15×Distance + 0.15×NetworkType + 0.10×Fiber + 0.05×InternetUsers
+```
+
+| Category | TIPI Threshold | Recommended Action |
+|---|---|---|
+| 🔴 High Priority | TIPI ≥ 75 | Immediate Fiber + 5G BTS Installation |
+| 🟡 Medium Priority | 45 ≤ TIPI < 75 | Scheduled 4G LTE Upgrade |
+| 🟢 Low Priority | TIPI < 45 | Routine Preventive Maintenance |
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer | Technology |
+|---|---|
+| Backend | Python 3.x, Flask |
+| Database | SQLite3 |
+| Data Processing | Pandas |
+| Report Generation | OpenPyXL (Excel), ReportLab (PDF) |
+| Frontend | HTML5, Vanilla CSS, Chart.js |
+| Icons | FontAwesome 6 |
+| Typography | Google Fonts (Inter, Outfit) |
+
+---
+
+## 📁 Project Structure
+
+```
+stip/
+│
+├── app.py                    # Flask backend (routes, TIPI engine, file upload, exports)
+├── db_init.py                # SQLite schema creator + default data seeder
+├── verify_stip.py            # Automated test suite (4 unit tests)
+├── requirements.txt          # Python dependencies
+├── .gitignore
+│
+├── static/
+│   └── css/
+│       └── style.css         # Custom BSNL-branded CSS design system
+│
+├── templates/
+│   ├── base.html             # Shared layout (sidebar, header, footer)
+│   ├── index.html            # Landing page
+│   ├── login.html            # Standalone login card
+│   ├── dashboard.html        # Metrics + Excel upload + quick nav
+│   ├── add_area.html         # Add/Edit area form
+│   ├── view_area.html        # Table view + search filter + detail modal
+│   ├── ranking.html          # Ranked list + BSNL recommendations
+│   ├── analytics.html        # 4 Chart.js interactive graphs
+│   └── report.html           # Export panel + print preview
+│
+├── uploads/                  # Temporary Excel uploads (auto-created, git-ignored)
+├── reports/                  # Generated PDF/Excel output (auto-created, git-ignored)
+│
+├── stip_project_report.md    # Software Engineering Project Report
+└── stip_research_paper.md    # IEEE-style Publication-Ready Research Paper
+```
+
+---
+
+## ⚙️ Setup & Installation
+
+### Prerequisites
+- Python 3.10 or higher
+- pip (Python package manager)
+
+### Step 1 — Clone the Repository
+```bash
+git clone https://github.com/YOUR_USERNAME/stip.git
+cd stip
+```
+
+### Step 2 — Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### Step 3 — Initialize the Database
+This creates `database.db`, the admin user, and seeds 12 mock telecom circles:
+```bash
+python db_init.py
+```
+
+### Step 4 — Run the Application
+```bash
+python app.py
+```
+
+### Step 5 — Open in Browser
+Navigate to: **[http://127.0.0.1:5000](http://127.0.0.1:5000)**
+
+---
+
+## 🔐 Default Login Credentials
+
+| Field | Value |
+|---|---|
+| Username | `admin` |
+| Password | `admin123` |
+
+---
+
+## 📊 Key Features
+
+- ✅ **Secure Login** — Session-based authentication with hashed passwords
+- ✅ **Area Management** — Full CRUD for telecom circle records
+- ✅ **TIPI Engine** — Automated weighted scoring calculation
+- ✅ **Batch Excel Import** — Upload `.xlsx` files with multiple circles for bulk calculation
+- ✅ **Template Download** — Pre-formatted Excel template to guide user uploads
+- ✅ **Interactive Analytics** — Bar chart, Doughnut, Pie, and Scatter plots (Chart.js)
+- ✅ **Priority Rankings** — Full ranked list with engineering recommendations
+- ✅ **PDF Export** — Professional multi-page PDF with headers, footers, and color-coded tables (ReportLab)
+- ✅ **Excel Export** — Color-coded, formatted spreadsheet download (OpenPyXL)
+- ✅ **Print Manager** — Print-ready view with automatic sidebar suppression
+
+---
+
+## 🧪 Running Tests
+
+```bash
+python verify_stip.py
+```
+
+**Test Results (Expected):**
+```
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.3s
+
+OK
+```
+
+---
+
+## 📄 Documentation
+
+| Document | Description |
+|---|---|
+| [stip_project_report.md](stip_project_report.md) | Full Software Engineering Project Report (SRS, Architecture, DB Schema, Testing) |
+| [stip_research_paper.md](stip_research_paper.md) | IEEE-format Research Paper (Abstract, Literature Review, Methodology, Results) |
+
+---
+
+## 🚀 Deployment Notes
+
+This project is built for local development. For production deployment:
+- Replace SQLite with PostgreSQL or MySQL
+- Use **Gunicorn** or **uWSGI** as the WSGI server
+- Use **Nginx** as the reverse proxy
+- Set a strong, random `SECRET_KEY` in production
+
+---
+
+## 👨‍💻 Author
+
+Developed as part of a Telecom Engineering research project aligned with **BSNL infrastructure planning standards**.
+
+---
+
+## 📜 License
+
+This project is for academic and educational use.
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+FILE: db_init.py
+################################################################################
+
+import sqlite3
+import os
+from werkzeug.security import generate_password_hash
+
+DB_PATH = os.path.join(os.path.dirname(__file__), 'database.db')
+
+def calculate_tipi(population, signal_strength, distance, internet_users, complaints, fiber, network_type):
+    # Sub-scores
+    s_pop = min(population / 50000.0, 1.0) * 100.0
+    s_sig = (1.0 - (signal_strength - 1) / 4.0) * 100.0
+    s_dist = min(distance / 10.0, 1.0) * 100.0
+    
+    net_scores = {"2G": 100.0, "3G": 75.0, "4G": 40.0, "5G": 10.0}
+    s_net = net_scores.get(network_type, 10.0)
+    
+    s_comp = min(complaints / 100.0, 1.0) * 100.0
+    s_user = float(internet_users)
+    s_fib = 100.0 if fiber.strip().lower() == "no" else 0.0
+    
+    # Weights
+    w_sig = 0.20
+    w_comp = 0.20
+    w_pop = 0.15
+    w_dist = 0.15
+    w_net = 0.15
+    w_fib = 0.10
+    w_user = 0.05
+    
+    score = (w_pop * s_pop + 
+             w_sig * s_sig + 
+             w_dist * s_dist + 
+             w_net * s_net + 
+             w_comp * s_comp + 
+             w_user * s_user + 
+             w_fib * s_fib)
+    
+    if score >= 75.0:
+        cat = "High"
+    elif score >= 45.0:
+        cat = "Medium"
+    else:
+        cat = "Low"
+        
+    return round(score, 2), cat
+
+def init_db():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    # Create Users Table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL
+    )
+    ''')
+    
+    # Create Areas Table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS areas (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        population INTEGER NOT NULL,
+        signal_strength INTEGER NOT NULL,
+        distance REAL NOT NULL,
+        internet_users INTEGER NOT NULL,
+        complaints INTEGER NOT NULL,
+        fiber TEXT NOT NULL,
+        network_type TEXT NOT NULL,
+        priority_score REAL NOT NULL,
+        category TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    ''')
+    
+    # Insert Default Admin User if not exists
+    cursor.execute("SELECT * FROM users WHERE username = 'admin'")
+    if not cursor.fetchone():
+        hashed_pw = generate_password_hash('admin123')
+        cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", ('admin', hashed_pw))
+        print("Default admin user created: admin / admin123")
+    
+    # Seed Mock Areas if the table is empty
+    cursor.execute("SELECT COUNT(*) FROM areas")
+    count = cursor.fetchone()[0]
+    if count == 0:
+        mock_data = [
+            ("Maharashtra East Circle - Wardha", 45000, 2, 7.5, 40, 85, "No", "3G"),
+            ("Kerala South Circle - Wayanad", 12000, 1, 12.0, 30, 95, "No", "2G"),
+            ("Tamil Nadu Circle - Salem Rural", 85000, 3, 4.2, 55, 60, "Yes", "4G"),
+            ("Bihar Central Circle - Vaishali", 120000, 1, 9.8, 25, 150, "No", "2G"),
+            ("UP East Circle - Gorakhpur Rural", 95000, 2, 8.0, 35, 110, "No", "3G"),
+            ("Karnataka North Circle - Bagalkot", 38000, 4, 3.1, 70, 25, "Yes", "4G"),
+            ("West Bengal Circle - Purulia", 62000, 2, 11.2, 45, 90, "No", "3G"),
+            ("Gujarat Circle - Kutch Border Area", 15000, 1, 15.4, 20, 80, "No", "2G"),
+            ("Rajasthan West Circle - Jaisalmer Outskirts", 8000, 2, 18.0, 15, 45, "No", "2G"),
+            ("Punjab Circle - Firozpur Rural", 52000, 3, 5.0, 65, 40, "Yes", "4G"),
+            ("NE-I Circle - Shillong Suburbs", 24000, 4, 6.2, 80, 20, "Yes", "5G"),
+            ("Madhya Pradesh Circle - Jhabua", 78000, 1, 10.5, 30, 130, "No", "2G"),
+        ]
+        
+        for item in mock_data:
+            name, pop, sig, dist, users, comp, fib, net = item
+            score, cat = calculate_tipi(pop, sig, dist, users, comp, fib, net)
+            cursor.execute('''
+            INSERT INTO areas (name, population, signal_strength, distance, internet_users, complaints, fiber, network_type, priority_score, category)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (name, pop, sig, dist, users, comp, fib, net, score, cat))
+        print("Mock telecom circle database seeded successfully!")
+        
+    conn.commit()
+    conn.close()
+
+if __name__ == '__main__':
+    init_db()
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+FILE: verify_stip.py
+################################################################################
+
+import unittest
+import os
+import sqlite3
+from app import app, calculate_tipi
+
+class STIPVerificationTests(unittest.TestCase):
+    def setUp(self):
+        # Configure app for testing
+        app.config['TESTING'] = True
+        app.config['WTF_CSRF_ENABLED'] = False
+        self.client = app.test_client()
+        
+    def test_tipi_calculation(self):
+        # High Priority Check
+        score, cat = calculate_tipi(
+            population=120000, 
+            signal_strength=1, 
+            distance=9.8, 
+            internet_users=25, 
+            complaints=150, 
+            fiber="No", 
+            network_type="2G"
+        )
+        self.assertGreaterEqual(score, 75.0)
+        self.assertEqual(cat, "High")
+        
+        # Low Priority Check
+        score_low, cat_low = calculate_tipi(
+            population=24000, 
+            signal_strength=4, 
+            distance=6.2, 
+            internet_users=80, 
+            complaints=20, 
+            fiber="Yes", 
+            network_type="5G"
+        )
+        self.assertLess(score_low, 45.0)
+        self.assertEqual(cat_low, "Low")
+
+    def test_public_routes(self):
+        # Welcome Page
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Smart Telecom Infrastructure Planner", response.data)
+        
+        # Login Page
+        response = self.client.get('/login')
+        self.assertEqual(response.status_code, 200)
+
+    def test_protected_route_redirect(self):
+        # Accessing dashboard without login should redirect
+        response = self.client.get('/dashboard', follow_redirects=True)
+        self.assertIn(b"Please log in to access this page.", response.data)
+
+    def test_login_flow(self):
+        # Log in with correct credentials (mocked admin)
+        response = self.client.post('/login', data={
+            'username': 'admin',
+            'password': 'admin123'
+        }, follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Logged in successfully", response.data)
+        self.assertIn(b"Total Areas", response.data)
+
+if __name__ == '__main__':
+    unittest.main()
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+FILE: app.py
+################################################################################
+
+import os
+import sqlite3
+import pandas as pd
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, send_file
+from werkzeug.security import check_password_hash
+from werkzeug.utils import secure_filename
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
+from reportlab.pdfgen import canvas
+from datetime import datetime
+
+# Initialize Flask App
+app = Flask(__name__)
+app.secret_key = 'stip_secret_key_bsnl_2026'
+
+# Paths
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, 'database.db')
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
+REPORTS_FOLDER = os.path.join(BASE_DIR, 'reports')
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(REPORTS_FOLDER, exist_ok=True)
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB limit
+
+# Helper: Connect to Database
+def get_db_connection():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+# Helper: Calculate TIPI score and Category
+def calculate_tipi(population, signal_strength, distance, internet_users, complaints, fiber, network_type):
+    try:
+        population = int(population)
+        signal_strength = int(signal_strength)
+        distance = float(distance)
+        internet_users = int(internet_users)
+        complaints = int(complaints)
+    except (ValueError, TypeError):
+        # Fallback default values
+        population = 0
+        signal_strength = 3
+        distance = 0.0
+        internet_users = 0
+        complaints = 0
+
+    fiber_clean = str(fiber).strip().lower()
+    net_clean = str(network_type).strip().upper()
+
+    # Sub-scores
+    s_pop = min(population / 50000.0, 1.0) * 100.0
+    s_sig = (1.0 - (signal_strength - 1) / 4.0) * 100.0 if 1 <= signal_strength <= 5 else 50.0
+    s_dist = min(distance / 10.0, 1.0) * 100.0
+    
+    net_scores = {"2G": 100.0, "3G": 75.0, "4G": 40.0, "5G": 10.0}
+    s_net = net_scores.get(net_clean, 40.0)
+    
+    s_comp = min(complaints / 100.0, 1.0) * 100.0
+    s_user = float(internet_users)
+    s_fib = 100.0 if fiber_clean == "no" else 0.0
+    
+    # Weights
+    w_sig = 0.20
+    w_comp = 0.20
+    w_pop = 0.15
+    w_dist = 0.15
+    w_net = 0.15
+    w_fib = 0.10
+    w_user = 0.05
+    
+    score = (w_pop * s_pop + 
+             w_sig * s_sig + 
+             w_dist * s_dist + 
+             w_net * s_net + 
+             w_comp * s_comp + 
+             w_user * s_user + 
+             w_fib * s_fib)
+    
+    score = round(score, 2)
+    
+    if score >= 75.0:
+        cat = "High"
+    elif score >= 45.0:
+        cat = "Medium"
+    else:
+        cat = "Low"
+        
+    return score, cat
+
+# PDF Helper Class for page numbering and headers
+class NumberedCanvas(canvas.Canvas):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._saved_page_states = []
+
+    def showPage(self):
+        self._saved_page_states.append(dict(self.__dict__))
+        self._startPage()
+
+    def save(self):
+        num_pages = len(self._saved_page_states)
+        for state in self._saved_page_states:
+            self.__dict__.update(state)
+            self.draw_page_number(num_pages)
+            super().showPage()
+        super().save()
+
+    def draw_page_number(self, page_count):
+        self.saveState()
+        self.setFont("Helvetica", 8)
+        self.setFillColor(colors.HexColor("#666666"))
+        
+        # Header (on pages other than the first page)
+        if self._pageNumber > 1:
+            self.drawString(54, 750, "STIP - Smart Telecom Infrastructure Planner (BSNL Portal)")
+            self.setStrokeColor(colors.HexColor("#D1D5DB"))
+            self.setLineWidth(0.5)
+            self.line(54, 742, 558, 742)
+            
+        # Footer
+        footer_text = f"Page {self._pageNumber} of {page_count}"
+        self.drawRightString(558, 40, footer_text)
+        self.drawString(54, 40, "CONFIDENTIAL - BSNL INTERNAL PLANNING REPORT")
+        self.setStrokeColor(colors.HexColor("#D1D5DB"))
+        self.setLineWidth(0.5)
+        self.line(54, 52, 558, 52)
+        
+        self.restoreState()
+
+# Routes
+@app.route('/')
+@app.route('/index')
+def index():
+    return render_template('index.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if 'user_id' in session:
+        return redirect(url_for('dashboard'))
+        
+    if request.method == 'POST':
+        username = request.form['username'].strip()
+        password = request.form['password'].strip()
+        
+        conn = get_db_connection()
+        user = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+        conn.close()
+        
+        if user and check_password_hash(user['password'], password):
+            session['user_id'] = user['id']
+            session['username'] = user['username']
+            flash('Logged in successfully.', 'success')
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Invalid username or password.', 'danger')
+            
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('Logged out successfully.', 'info')
+    return redirect(url_for('index'))
+
+# Route wrapper to check login
+def login_required(f):
+    import functools
+    @functools.wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('Please log in to access this page.', 'warning')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    conn = get_db_connection()
+    # Stats
+    total_areas = conn.execute("SELECT COUNT(*) FROM areas").fetchone()[0]
+    high_count = conn.execute("SELECT COUNT(*) FROM areas WHERE category = 'High'").fetchone()[0]
+    med_count = conn.execute("SELECT COUNT(*) FROM areas WHERE category = 'Medium'").fetchone()[0]
+    low_count = conn.execute("SELECT COUNT(*) FROM areas WHERE category = 'Low'").fetchone()[0]
+    avg_signal = conn.execute("SELECT AVG(signal_strength) FROM areas").fetchone()[0] or 0.0
+    
+    # Tables
+    recent_areas = conn.execute("SELECT * FROM areas ORDER BY created_at DESC LIMIT 5").fetchall()
+    top_priority = conn.execute("SELECT * FROM areas ORDER BY priority_score DESC LIMIT 5").fetchall()
+    conn.close()
+    
+    return render_template('dashboard.html', 
+                           total_areas=total_areas, 
+                           high_count=high_count, 
+                           med_count=med_count, 
+                           low_count=low_count, 
+                           avg_signal=round(avg_signal, 2),
+                           recent_areas=recent_areas, 
+                           top_priority=top_priority)
+
+@app.route('/add', methods=['GET', 'POST'])
+@login_required
+def add_area():
+    if request.method == 'POST':
+        name = request.form['name'].strip()
+        population = int(request.form['population'])
+        signal_strength = int(request.form['signal_strength'])
+        distance = float(request.form['distance'])
+        internet_users = int(request.form['internet_users'])
+        complaints = int(request.form['complaints'])
+        fiber = request.form['fiber']
+        network_type = request.form['network_type']
+        
+        # Calculate TIPI score
+        score, cat = calculate_tipi(population, signal_strength, distance, internet_users, complaints, fiber, network_type)
+        
+        conn = get_db_connection()
+        conn.execute('''
+            INSERT INTO areas (name, population, signal_strength, distance, internet_users, complaints, fiber, network_type, priority_score, category)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (name, population, signal_strength, distance, internet_users, complaints, fiber, network_type, score, cat))
+        conn.commit()
+        conn.close()
+        
+        flash(f'Area "{name}" added successfully with Priority Score {score} ({cat}).', 'success')
+        return redirect(url_for('view_areas'))
+        
+    return render_template('add_area.html', area=None)
+
+@app.route('/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_area(id):
+    conn = get_db_connection()
+    area = conn.execute("SELECT * FROM areas WHERE id = ?", (id,)).fetchone()
+    
+    if area is None:
+        conn.close()
+        flash('Area not found.', 'danger')
+        return redirect(url_for('view_areas'))
+        
+    if request.method == 'POST':
+        name = request.form['name'].strip()
+        population = int(request.form['population'])
+        signal_strength = int(request.form['signal_strength'])
+        distance = float(request.form['distance'])
+        internet_users = int(request.form['internet_users'])
+        complaints = int(request.form['complaints'])
+        fiber = request.form['fiber']
+        network_type = request.form['network_type']
+        
+        # Recalculate
+        score, cat = calculate_tipi(population, signal_strength, distance, internet_users, complaints, fiber, network_type)
+        
+        conn.execute('''
+            UPDATE areas 
+            SET name = ?, population = ?, signal_strength = ?, distance = ?, internet_users = ?, complaints = ?, fiber = ?, network_type = ?, priority_score = ?, category = ?
+            WHERE id = ?
+        ''', (name, population, signal_strength, distance, internet_users, complaints, fiber, network_type, score, cat, id))
+        conn.commit()
+        conn.close()
+        
+        flash(f'Area "{name}" updated successfully.', 'success')
+        return redirect(url_for('view_areas'))
+        
+    conn.close()
+    return render_template('add_area.html', area=area)
+
+@app.route('/delete/<int:id>', methods=['POST'])
+@login_required
+def delete_area(id):
+    conn = get_db_connection()
+    conn.execute("DELETE FROM areas WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+    flash('Area record deleted.', 'success')
+    return redirect(url_for('view_areas'))
+
+@app.route('/view')
+@login_required
+def view_areas():
+    search = request.args.get('search', '').strip()
+    net_type = request.args.get('network_type', '').strip()
+    category = request.args.get('category', '').strip()
+    
+    query = "SELECT * FROM areas WHERE 1=1"
+    params = []
+    
+    if search:
+        query += " AND name LIKE ?"
+        params.append(f"%{search}%")
+    if net_type:
+        query += " AND network_type = ?"
+        params.append(net_type)
+    if category:
+        query += " AND category = ?"
+        params.append(category)
+        
+    query += " ORDER BY created_at DESC"
+    
+    conn = get_db_connection()
+    areas = conn.execute(query, params).fetchall()
+    conn.close()
+    
+    return render_template('view_area.html', areas=areas, search=search, network_type=net_type, category=category)
+
+@app.route('/calculate', methods=['POST'])
+@login_required
+def calculate_priority():
+    conn = get_db_connection()
+    areas = conn.execute("SELECT * FROM areas").fetchall()
+    
+    for area in areas:
+        score, cat = calculate_tipi(
+            area['population'], 
+            area['signal_strength'], 
+            area['distance'], 
+            area['internet_users'], 
+            area['complaints'], 
+            area['fiber'], 
+            area['network_type']
+        )
+        conn.execute("UPDATE areas SET priority_score = ?, category = ? WHERE id = ?", (score, cat, area['id']))
+        
+    conn.commit()
+    conn.close()
+    flash('TIPI Scores re-calculated for all areas successfully.', 'success')
+    return redirect(url_for('ranking'))
+
+@app.route('/ranking')
+@login_required
+def ranking():
+    conn = get_db_connection()
+    areas = conn.execute("SELECT * FROM areas ORDER BY priority_score DESC").fetchall()
+    conn.close()
+    
+    # Dynamic BSNL standard recommendations based on priority category and specific gaps
+    ranked_areas = []
+    for rank, area in enumerate(areas, 1):
+        rec = ""
+        if area['category'] == 'High':
+            if area['fiber'].strip().lower() == 'no' and area['network_type'] in ['2G', '3G']:
+                rec = "CRITICAL: Deploy fiber backhaul & replace legacy BTS with multi-sector 5G node immediately."
+            elif area['complaints'] > 80:
+                rec = "URGENT: Capacity expansion. Add micro-cells to distribute load and resolve high complaints."
+            else:
+                rec = "IMMEDIATE: Erect new cell tower and deploy 4G/5G co-location to resolve poor coverage."
+        elif area['category'] == 'Medium':
+            if area['distance'] > 8.0:
+                rec = "SCHEDULED: Install macro-repeater or optimize tilt on current towers to bridge range."
+            elif area['network_type'] == '3G':
+                rec = "SCHEDULED: Upgrade transceiver modules to LTE (4G) during next cycle."
+            else:
+                rec = "ROUTINE: Increase RF power output, perform sector re-routing, and check user complaints."
+        else:
+            rec = "MONITOR: Core KPIs are satisfactory. Scheduled preventive maintenance check every 6 months."
+            
+        ranked_areas.append({
+            'rank': rank,
+            'id': area['id'],
+            'name': area['name'],
+            'population': area['population'],
+            'network_type': area['network_type'],
+            'fiber': area['fiber'],
+            'priority_score': area['priority_score'],
+            'category': area['category'],
+            'recommendation': rec
+        })
+        
+    return render_template('ranking.html', areas=ranked_areas)
+
+@app.route('/analytics')
+@login_required
+def analytics():
+    return render_template('analytics.html')
+
+# Endpoint returning JSON data for Chart.js
+@app.route('/api/chart-data')
+@login_required
+def chart_data():
+    conn = get_db_connection()
+    areas_db = conn.execute("SELECT * FROM areas ORDER BY priority_score DESC").fetchall()
+    conn.close()
+    
+    # Convert Row objects to list of dicts
+    areas = [dict(row) for row in areas_db]
+    
+    # 1. Top 10 Priority Areas
+    top_10 = [{'name': a['name'], 'score': a['priority_score'], 'category': a['category']} for a in areas[:10]]
+    
+    # 2. Complaint distribution (group by network type or category or area)
+    complaints = [{'name': a['name'], 'complaints': a['complaints']} for a in areas]
+    
+    # 3. Population vs Priority Scatter
+    scatter = [{'x': a['population'], 'y': a['priority_score'], 'label': a['name']} for a in areas]
+    
+    # 4. Network type distribution
+    net_types = {}
+    for a in areas:
+        net = a['network_type']
+        net_types[net] = net_types.get(net, 0) + 1
+        
+    # 5. Category distribution
+    cat_counts = {"High": 0, "Medium": 0, "Low": 0}
+    for a in areas:
+        cat = a['category']
+        if cat in cat_counts:
+            cat_counts[cat] += 1
+            
+    return jsonify({
+        'top_10': top_10,
+        'complaints': complaints,
+        'scatter': scatter,
+        'net_types': net_types,
+        'categories': cat_counts
+    })
+
+# Excel Upload Handler
+@app.route('/upload', methods=['POST'])
+@login_required
+def upload_file():
+    if 'file' not in request.files:
+        flash('No file part', 'danger')
+        return redirect(url_for('dashboard'))
+        
+    file = request.files['file']
+    if file.filename == '':
+        flash('No selected file', 'danger')
+        return redirect(url_for('dashboard'))
+        
+    if file and (file.filename.endswith('.xlsx') or file.filename.endswith('.xls')):
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+        
+        try:
+            # Read Excel via Pandas
+            df = pd.read_excel(filepath)
+            
+            # Column mapping (tolerant of case and spaces)
+            col_map = {
+                'area name': 'name', 'area': 'name', 'name': 'name',
+                'population': 'population', 'pop': 'population',
+                'signal strength': 'signal_strength', 'signal': 'signal_strength', 'signalstrength': 'signal_strength',
+                'distance': 'distance', 'distance (km)': 'distance', 'distance from tower': 'distance',
+                'internet users': 'internet_users', 'internet users %': 'internet_users', 'internetusers': 'internet_users',
+                'complaints': 'complaints', 'complaint count': 'complaints', 'complaints count': 'complaints',
+                'fiber': 'fiber', 'fiber available': 'fiber', 'fiber available (yes/no)': 'fiber',
+                'network type': 'network_type', 'network': 'network_type', 'networktype': 'network_type'
+            }
+            
+            # Clean dataframe columns
+            cleaned_cols = {}
+            for col in df.columns:
+                col_lower = str(col).strip().lower()
+                if col_lower in col_map:
+                    cleaned_cols[col] = col_map[col_lower]
+                    
+            if len(set(cleaned_cols.values())) < 8:
+                missing = set(['name', 'population', 'signal_strength', 'distance', 'internet_users', 'complaints', 'fiber', 'network_type']) - set(cleaned_cols.values())
+                flash(f'Excel file lacks required columns. Missing: {list(missing)}. Please use the download template.', 'danger')
+                return redirect(url_for('dashboard'))
+                
+            df = df.rename(columns=cleaned_cols)
+            df = df[['name', 'population', 'signal_strength', 'distance', 'internet_users', 'complaints', 'fiber', 'network_type']]
+            
+            conn = get_db_connection()
+            rows_inserted = 0
+            
+            for index, row in df.iterrows():
+                name = str(row['name']).strip()
+                if not name or name == 'nan':
+                    continue
+                
+                # Coerce types
+                try:
+                    pop = int(row['population'])
+                    sig = int(row['signal_strength'])
+                    dist = float(row['distance'])
+                    users = int(row['internet_users'])
+                    comp = int(row['complaints'])
+                    fib = str(row['fiber']).strip()
+                    net = str(row['network_type']).strip()
+                except Exception as e:
+                    # Skip rows with format errors
+                    continue
+                    
+                score, cat = calculate_tipi(pop, sig, dist, users, comp, fib, net)
+                
+                conn.execute('''
+                    INSERT INTO areas (name, population, signal_strength, distance, internet_users, complaints, fiber, network_type, priority_score, category)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (name, pop, sig, dist, users, comp, fib, net, score, cat))
+                rows_inserted += 1
+                
+            conn.commit()
+            conn.close()
+            
+            # Cleanup file
+            os.remove(filepath)
+            flash(f'Successfully imported {rows_inserted} areas from Excel file. All priority indexes recalculated.', 'success')
+            
+        except Exception as e:
+            flash(f'Error reading Excel file: {str(e)}', 'danger')
+            if os.path.exists(filepath):
+                os.remove(filepath)
+                
+        return redirect(url_for('dashboard'))
+    else:
+        flash('Invalid file extension. Please upload a standard Excel file (.xlsx or .xls).', 'danger')
+        return redirect(url_for('dashboard'))
+
+# Template Downloader for Excel Bulk Upload
+@app.route('/download/template')
+@login_required
+def download_template():
+    # Generate an empty template with columns
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "STIP Import Template"
+    
+    headers = [
+        "Area Name", "Population", "Signal Strength", 
+        "Distance", "Internet Users", "Complaints", 
+        "Fiber", "Network Type"
+    ]
+    
+    # Styles
+    header_fill = PatternFill(start_color="0B2545", end_color="0B2545", fill_type="solid")
+    header_font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
+    align_center = Alignment(horizontal="center", vertical="center")
+    
+    ws.append(headers)
+    
+    # Sample Row
+    ws.append([
+        "Sample Circle A", 45000, 3, 
+        5.4, 60, 45, 
+        "No", "3G"
+    ])
+    
+    # Auto-adjust column widths
+    for col in ws.columns:
+        max_len = max(len(str(cell.value or '')) for cell in col)
+        ws.column_dimensions[col[0].column_letter].width = max(max_len + 3, 15)
+        
+    # Apply header format
+    for cell in ws[1]:
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = align_center
+        
+    temp_path = os.path.join(app.config['UPLOAD_FOLDER'], 'stip_upload_template.xlsx')
+    wb.save(temp_path)
+    
+    return send_file(temp_path, as_attachment=True, download_name="stip_bulk_upload_template.xlsx")
+
+@app.route('/reports')
+@login_required
+def reports():
+    conn = get_db_connection()
+    areas = conn.execute("SELECT * FROM areas ORDER BY priority_score DESC").fetchall()
+    total = len(areas)
+    high = conn.execute("SELECT COUNT(*) FROM areas WHERE category='High'").fetchone()[0]
+    med = conn.execute("SELECT COUNT(*) FROM areas WHERE category='Medium'").fetchone()[0]
+    low = conn.execute("SELECT COUNT(*) FROM areas WHERE category='Low'").fetchone()[0]
+    conn.close()
+    
+    return render_template('report.html', areas=areas, total=total, high=high, med=med, low=low)
+
+# Report Exports - EXCEL
+@app.route('/report/excel')
+@login_required
+def export_excel():
+    conn = get_db_connection()
+    areas = conn.execute("SELECT * FROM areas ORDER BY priority_score DESC").fetchall()
+    conn.close()
+    
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Priority Analysis Report"
+    
+    # Headers
+    headers = [
+        "Rank", "Circle/Area Name", "Population", "Signal Strength (1-5)", 
+        "Distance to Tower (km)", "Internet Users %", "Monthly Complaints", 
+        "Fiber Backhaul", "Current Tech", "TIPI Priority Score", "Category"
+    ]
+    ws.append(headers)
+    
+    # Rows
+    for rank, area in enumerate(areas, 1):
+        ws.append([
+            rank, area['name'], area['population'], area['signal_strength'],
+            area['distance'], area['internet_users'], area['complaints'],
+            area['fiber'], area['network_type'], area['priority_score'], area['category']
+        ])
+        
+    # Style Sheet formatting
+    header_fill = PatternFill(start_color="0B2545", end_color="0B2545", fill_type="solid")
+    header_font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
+    
+    # Category fills
+    high_fill = PatternFill(start_color="F8D7DA", end_color="F8D7DA", fill_type="solid") # soft red
+    med_fill = PatternFill(start_color="FFF3CD", end_color="FFF3CD", fill_type="solid")  # soft yellow
+    low_fill = PatternFill(start_color="D1E7DD", end_color="D1E7DD", fill_type="solid")  # soft green
+    
+    border_thin = Border(
+        left=Side(style='thin', color='D1D5DB'),
+        right=Side(style='thin', color='D1D5DB'),
+        top=Side(style='thin', color='D1D5DB'),
+        bottom=Side(style='thin', color='D1D5DB')
+    )
+    
+    # Apply cell styles
+    for col in ws.columns:
+        max_len = max(len(str(cell.value or '')) for cell in col)
+        ws.column_dimensions[col[0].column_letter].width = max(max_len + 3, 12)
+        
+    for cell in ws[1]:
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+        
+    for row_idx in range(2, len(areas) + 2):
+        category = ws.cell(row=row_idx, column=11).value
+        # Borders & Fonts
+        for col_idx in range(1, 12):
+            cell = ws.cell(row=row_idx, column=col_idx)
+            cell.border = border_thin
+            if col_idx in [1, 3, 4, 5, 6, 7, 8, 9, 10]:
+                cell.alignment = Alignment(horizontal="center")
+            
+            # Apply color highlights based on category
+            if category == 'High':
+                cell.fill = high_fill
+            elif category == 'Medium':
+                cell.fill = med_fill
+            elif category == 'Low':
+                cell.fill = low_fill
+                
+    # Freeze pane
+    ws.freeze_panes = "A2"
+    
+    file_path = os.path.join(REPORTS_FOLDER, 'stip_infrastructure_priority_report.xlsx')
+    wb.save(file_path)
+    
+    return send_file(file_path, as_attachment=True, download_name=f"STIP_Priority_Report_{datetime.now().strftime('%Y%m%d')}.xlsx")
+
+# Report Exports - PDF using ReportLab
+@app.route('/report/pdf')
+@login_required
+def export_pdf():
+    conn = get_db_connection()
+    areas = conn.execute("SELECT * FROM areas ORDER BY priority_score DESC").fetchall()
+    
+    total = len(areas)
+    high = conn.execute("SELECT COUNT(*) FROM areas WHERE category='High'").fetchone()[0]
+    med = conn.execute("SELECT COUNT(*) FROM areas WHERE category='Medium'").fetchone()[0]
+    low = conn.execute("SELECT COUNT(*) FROM areas WHERE category='Low'").fetchone()[0]
+    conn.close()
+    
+    pdf_path = os.path.join(REPORTS_FOLDER, 'stip_report.pdf')
+    
+    # 0.75 in margins = 54 pt
+    doc = SimpleDocTemplate(pdf_path, pagesize=letter, leftMargin=54, rightMargin=54, topMargin=54, bottomMargin=54)
+    story = []
+    
+    # Style Sheet
+    styles = getSampleStyleSheet()
+    
+    # Custom styles
+    title_style = ParagraphStyle(
+        'DocTitle',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=22,
+        leading=26,
+        textColor=colors.HexColor('#0B2545'),
+        alignment=0, # Left-aligned
+        spaceAfter=6
+    )
+    
+    subtitle_style = ParagraphStyle(
+        'DocSubtitle',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=12,
+        leading=16,
+        textColor=colors.HexColor('#666666'),
+        alignment=0,
+        spaceAfter=20
+    )
+    
+    h1_style = ParagraphStyle(
+        'Header1',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=14,
+        leading=18,
+        textColor=colors.HexColor('#134074'),
+        spaceBefore=14,
+        spaceAfter=8,
+        keepWithNext=True
+    )
+    
+    body_style = ParagraphStyle(
+        'BodyTextCustom',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=9.5,
+        leading=13.5,
+        textColor=colors.HexColor('#333333'),
+        spaceAfter=8
+    )
+    
+    cell_style = ParagraphStyle(
+        'TableCell',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=8,
+        leading=10,
+        textColor=colors.HexColor('#333333'),
+        alignment=1 # Centered
+    )
+    
+    cell_left_style = ParagraphStyle(
+        'TableCellLeft',
+        parent=styles['Normal'],
+        fontName='Helvetica',
+        fontSize=8,
+        leading=10,
+        textColor=colors.HexColor('#333333'),
+        alignment=0 # Left
+    )
+    
+    header_cell_style = ParagraphStyle(
+        'TableHeaderCell',
+        parent=styles['Normal'],
+        fontName='Helvetica-Bold',
+        fontSize=8,
+        leading=10,
+        textColor=colors.white,
+        alignment=1 # Centered
+    )
+    
+    # Add Cover Title
+    story.append(Paragraph("Smart Telecom Infrastructure Planner (STIP)", title_style))
+    story.append(Paragraph(f"Decision Support Report - Generated on {datetime.now().strftime('%B %d, %Y at %H:%M')}", subtitle_style))
+    story.append(Spacer(1, 10))
+    
+    # Exec Summary Card
+    story.append(Paragraph("Executive Summary", h1_style))
+    summary_text = (
+        f"This strategic planning document evaluates {total} geographical circles to prioritize BSNL's "
+        "infrastructure expansion and resource deployment. Scores are calculated via the Telecom Infrastructure "
+        f"Priority Index (TIPI) algorithm. Currently, {high} circles are flagged as High Priority "
+        f"(immediate installation recommended), {med} as Medium Priority (scheduled upgrades required), "
+        f"and {low} as Low Priority (routine maintenance)."
+    )
+    story.append(Paragraph(summary_text, body_style))
+    story.append(Spacer(1, 10))
+    
+    # Summary Table
+    summary_data = [
+        [Paragraph("Category", header_cell_style), Paragraph("Threshold", header_cell_style), Paragraph("Circles Identified", header_cell_style), Paragraph("Recommended Action", header_cell_style)],
+        [Paragraph("High Priority", cell_left_style), Paragraph("TIPI >= 75", cell_style), Paragraph(str(high), cell_style), Paragraph("Immediate Fiber Backhaul / 5G Installation", cell_left_style)],
+        [Paragraph("Medium Priority", cell_left_style), Paragraph("45 <= TIPI < 75", cell_style), Paragraph(str(med), cell_style), Paragraph("Upgrade legacy node to 4G LTE / Optimize Tilt", cell_left_style)],
+        [Paragraph("Low Priority", cell_left_style), Paragraph("TIPI < 45", cell_style), Paragraph(str(low), cell_style), Paragraph("Preventive maintenance / Routine KPI monitoring", cell_left_style)],
+    ]
+    
+    summary_table = Table(summary_data, colWidths=[100, 80, 100, 224])
+    summary_table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#0B2545')),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('BOTTOMPADDING', (0,0), (-1,0), 6),
+        ('TOPPADDING', (0,0), (-1,0), 6),
+        ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor('#D1D5DB')),
+        ('BACKGROUND', (0,1), (-1,1), colors.HexColor('#FDF2F2')), # soft red
+        ('BACKGROUND', (0,2), (-1,2), colors.HexColor('#FEFCE8')), # soft yellow
+        ('BACKGROUND', (0,3), (-1,3), colors.HexColor('#F0FDF4')), # soft green
+        ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, colors.white]),
+        ('PADDING', (0,0), (-1,-1), 6),
+    ]))
+    
+    story.append(summary_table)
+    story.append(Spacer(1, 20))
+    
+    # Priority Rankings Table
+    story.append(Paragraph("Infrastructure Priority Index Rankings", h1_style))
+    
+    table_data = [
+        [
+            Paragraph("Rk", header_cell_style), 
+            Paragraph("Circle/Area Name", header_cell_style), 
+            Paragraph("Pop.", header_cell_style), 
+            Paragraph("Sig.", header_cell_style), 
+            Paragraph("Dist.", header_cell_style), 
+            Paragraph("Comp.", header_cell_style), 
+            Paragraph("Fib.", header_cell_style), 
+            Paragraph("Tech", header_cell_style), 
+            Paragraph("TIPI", header_cell_style), 
+            Paragraph("Priority", header_cell_style)
+        ]
+    ]
+    
+    for r, area in enumerate(areas, 1):
+        # Color matching
+        cat = area['category']
+        if cat == 'High':
+            cat_color = colors.HexColor('#991B1B') # dark red
+        elif cat == 'Medium':
+            cat_color = colors.HexColor('#9A3412') # dark orange
+        else:
+            cat_color = colors.HexColor('#166534') # dark green
+            
+        cat_p = Paragraph(f"<font color='{cat_color.hexval()}'><b>{cat}</b></font>", cell_style)
+        
+        table_data.append([
+            Paragraph(str(r), cell_style),
+            Paragraph(area['name'], cell_left_style),
+            Paragraph(f"{area['population']:,}", cell_style),
+            Paragraph(str(area['signal_strength']), cell_style),
+            Paragraph(f"{area['distance']} km", cell_style),
+            Paragraph(str(area['complaints']), cell_style),
+            Paragraph(area['fiber'], cell_style),
+            Paragraph(area['network_type'], cell_style),
+            Paragraph(f"<b>{area['priority_score']}</b>", cell_style),
+            cat_p
+        ])
+        
+    rankings_table = Table(table_data, colWidths=[20, 140, 48, 28, 38, 38, 28, 32, 42, 50])
+    
+    # Base styling
+    ts = TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#134074')),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('BOTTOMPADDING', (0,0), (-1,0), 5),
+        ('TOPPADDING', (0,0), (-1,0), 5),
+        ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor('#E5E7EB')),
+        ('PADDING', (0,0), (-1,-1), 4),
+    ])
+    
+    # Add alternating colors to data rows
+    for i in range(1, len(table_data)):
+        if i % 2 == 0:
+            ts.add('BACKGROUND', (0, i), (-1, i), colors.HexColor('#F9FAFB'))
+            
+    rankings_table.setStyle(ts)
+    story.append(rankings_table)
+    
+    # Build Document using NumberedCanvas for header/footer
+    doc.build(story, canvasmaker=NumberedCanvas)
+    
+    return send_file(pdf_path, as_attachment=True, download_name=f"STIP_Priority_Report_{datetime.now().strftime('%Y%m%d')}.pdf")
+
+# Database initializer check in Flask
+@app.before_request
+def check_db():
+    if not os.path.exists(DB_PATH):
+        # Trigger initialization
+        from db_init import init_db
+        init_db()
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+FILE: static/css/style.css
+################################################################################
+
+/* Smart Telecom Infrastructure Planner (STIP) - Modern CSS Stylesheet */
+/* Theme: BSNL Corporate Navy Blue, Telecom Blue & Accent Orange */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --primary-dark: #0B2545;
+    --primary-medium: #134074;
+    --primary-light: #8DA9C4;
+    --accent-orange: #EE6C4D;
+    --bg-light: #F0F4F8;
+    --card-bg: rgba(255, 255, 255, 0.9);
+    --border-color: #D3E0EA;
+    --text-main: #2D3748;
+    --text-muted: #718096;
+    
+    /* Priority Status Colors */
+    --priority-high-bg: #FEE2E2;
+    --priority-high-border: #FCA5A5;
+    --priority-high-text: #B91C1C;
+    
+    --priority-medium-bg: #FEF3C7;
+    --priority-medium-border: #FCD34D;
+    --priority-medium-text: #B45309;
+    
+    --priority-low-bg: #D1E7DD;
+    --priority-low-border: #A3CFBB;
+    --priority-low-text: #0F5132;
+    
+    --transition-speed: 0.3s;
+    --shadow-sm: 0 2px 4px rgba(11, 37, 69, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(11, 37, 69, 0.1), 0 2px 4px -1px rgba(11, 37, 69, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(11, 37, 69, 0.1), 0 4px 6px -2px rgba(11, 37, 69, 0.05);
+}
+
+/* Reset & Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
+    color: var(--primary-dark);
+    font-weight: 700;
+}
+
+/* Structure & Layout */
+.app-container {
+    display: flex;
+    min-height: 100vh;
+    width: 100vw;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    width: 260px;
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-medium) 100%);
+    color: #fff;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.15);
+    transition: all var(--transition-speed) ease;
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-logo i {
+    font-size: 2.2rem;
+    color: var(--accent-orange);
+}
+
+.sidebar-logo .logo-text {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    letter-spacing: 0.5px;
+    line-height: 1.1;
+    color: #fff;
+}
+
+.sidebar-logo .logo-sub {
+    font-size: 0.7rem;
+    color: var(--primary-light);
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.sidebar-menu {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex-grow: 1;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 1rem;
+    color: #cbd5e0;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all var(--transition-speed) ease;
+}
+
+.sidebar-link i {
+    width: 20px;
+    font-size: 1.1rem;
+    text-align: center;
+    transition: transform var(--transition-speed);
+}
+
+.sidebar-link:hover, .sidebar-link.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.sidebar-link.active {
+    border-left: 4px solid var(--accent-orange);
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.sidebar-link:hover i {
+    transform: scale(1.15);
+    color: var(--accent-orange);
+}
+
+.sidebar-footer {
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.8rem;
+    color: var(--primary-light);
+    text-align: center;
+}
+
+/* Main Content Wrapper */
+.main-wrapper {
+    flex: 1;
+    margin-left: 260px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    transition: all var(--transition-speed) ease;
+}
+
+/* Top Navbar Header */
+.top-header {
+    background-color: #fff;
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: 900;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.header-title-section h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+}
+
+.header-user-section {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.user-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--bg-light);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--primary-medium);
+}
+
+.user-badge i {
+    color: var(--accent-orange);
+}
+
+.logout-btn-header {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: all var(--transition-speed);
+}
+
+.logout-btn-header:hover {
+    background-color: #FEE2E2;
+    color: var(--priority-high-text);
+    border-color: var(--priority-high-border);
+}
+
+/* Page Container (Main Body) */
+.page-container {
+    padding: 2rem;
+    flex-grow: 1;
+}
+
+/* Card Styling - Glassmorphism style */
+.stip-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+    margin-bottom: 1.5rem;
+}
+
+.stip-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.card-title-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.75rem;
+}
+
+/* Dashboard Metrics Grid */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.metric-card {
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-speed);
+    position: relative;
+    overflow: hidden;
+}
+
+.metric-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.metric-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: var(--primary-light);
+}
+
+.metric-card.high-p::after { background-color: var(--priority-high-border); }
+.metric-card.med-p::after { background-color: var(--priority-medium-border); }
+.metric-card.low-p::after { background-color: var(--priority-low-border); }
+.metric-card.total-a::after { background-color: var(--accent-orange); }
+
+.metric-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background-color: var(--bg-light);
+    color: var(--primary-medium);
+}
+
+.metric-card.high-p .metric-icon { background-color: var(--priority-high-bg); color: var(--priority-high-text); }
+.metric-card.med-p .metric-icon { background-color: var(--priority-medium-bg); color: var(--priority-medium-text); }
+.metric-card.low-p .metric-icon { background-color: var(--priority-low-bg); color: var(--priority-low-text); }
+.metric-card.total-a .metric-icon { background-color: rgba(238, 108, 77, 0.1); color: var(--accent-orange); }
+
+.metric-details h4 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.metric-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--primary-dark);
+    line-height: 1.2;
+    margin-top: 0.25rem;
+}
+
+/* Buttons */
+.btn-stip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    text-decoration: none;
+    border: none;
+}
+
+.btn-primary-stip {
+    background-color: var(--primary-medium);
+    color: #fff;
+}
+
+.btn-primary-stip:hover {
+    background-color: var(--primary-dark);
+    box-shadow: 0 4px 10px rgba(19, 64, 116, 0.3);
+}
+
+.btn-accent-stip {
+    background-color: var(--accent-orange);
+    color: #fff;
+}
+
+.btn-accent-stip:hover {
+    background-color: #d6593a;
+    box-shadow: 0 4px 10px rgba(238, 108, 77, 0.3);
+}
+
+.btn-outline-stip {
+    background-color: transparent;
+    border: 1px solid var(--primary-medium);
+    color: var(--primary-medium);
+}
+
+.btn-outline-stip:hover {
+    background-color: var(--primary-medium);
+    color: #fff;
+}
+
+.btn-sm-stip {
+    padding: 0.4rem 0.85rem;
+    font-size: 0.8rem;
+    border-radius: 6px;
+}
+
+/* Forms & Inputs */
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+    margin-bottom: 0.5rem;
+}
+
+.form-control-stip {
+    width: 100%;
+    padding: 0.65rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    background-color: #fff;
+    transition: all var(--transition-speed);
+}
+
+.form-control-stip:focus {
+    outline: none;
+    border-color: var(--primary-medium);
+    box-shadow: 0 0 0 3px rgba(19, 64, 116, 0.15);
+}
+
+select.form-control-stip {
+    cursor: pointer;
+}
+
+/* Upload Panel styling */
+.upload-zone {
+    border: 2px dashed var(--primary-light);
+    border-radius: 12px;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    background-color: rgba(240, 244, 248, 0.4);
+    cursor: pointer;
+    transition: all var(--transition-speed);
+}
+
+.upload-zone:hover {
+    border-color: var(--accent-orange);
+    background-color: rgba(238, 108, 77, 0.05);
+}
+
+.upload-icon {
+    font-size: 2.5rem;
+    color: var(--primary-medium);
+    margin-bottom: 1rem;
+}
+
+/* Tables & Badges */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.stip-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+}
+
+.stip-table th {
+    background-color: var(--bg-light);
+    color: var(--primary-dark);
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.85rem 1rem;
+    text-align: left;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.stip-table td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.9rem;
+    vertical-align: middle;
+}
+
+.stip-table tbody tr:hover {
+    background-color: rgba(240, 244, 248, 0.5);
+}
+
+.badge-priority {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid transparent;
+}
+
+.badge-priority.high {
+    background-color: var(--priority-high-bg);
+    color: var(--priority-high-text);
+    border-color: var(--priority-high-border);
+}
+
+.badge-priority.medium {
+    background-color: var(--priority-medium-bg);
+    color: var(--priority-medium-text);
+    border-color: var(--priority-medium-border);
+}
+
+.badge-priority.low {
+    background-color: var(--priority-low-bg);
+    color: var(--priority-low-text);
+    border-color: var(--priority-low-border);
+}
+
+.tech-tag {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background-color: var(--primary-medium);
+    color: #fff;
+    border-radius: 4px;
+}
+
+.tech-tag.net-5g { background-color: #8B5CF6; }
+.tech-tag.net-4g { background-color: #3B82F6; }
+.tech-tag.net-3g { background-color: #06B6D4; }
+.tech-tag.net-2g { background-color: #6B7280; }
+
+.fiber-badge {
+    font-weight: 600;
+}
+.fiber-badge.yes { color: var(--priority-low-text); }
+.fiber-badge.no { color: var(--priority-high-text); }
+
+/* Landing (Index) Page Styling */
+.landing-hero {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-medium) 100%);
+    color: #fff;
+    padding: 5rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.landing-hero h1 {
+    font-size: 3rem;
+    color: #fff;
+    margin-bottom: 1.5rem;
+    line-height: 1.1;
+    font-weight: 800;
+}
+
+.landing-hero p {
+    font-size: 1.25rem;
+    color: var(--primary-light);
+    max-width: 800px;
+    margin: 0 auto 2.5rem;
+    font-weight: 300;
+}
+
+.features-section {
+    padding: 4rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.feature-box {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: all var(--transition-speed);
+}
+
+.feature-box:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent-orange);
+}
+
+.feature-box i {
+    font-size: 2.5rem;
+    color: var(--accent-orange);
+    margin-bottom: 1.25rem;
+}
+
+.feature-box h3 {
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+}
+
+/* Login Page Styling */
+.login-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--primary-dark) 0%, #1a365d 100%);
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(15px);
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.login-header i {
+    font-size: 3rem;
+    color: var(--accent-orange);
+    margin-bottom: 0.75rem;
+}
+
+.login-header h2 {
+    font-size: 1.6rem;
+    margin-bottom: 0.25rem;
+}
+
+.login-header p {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+/* Alert styles */
+.alert {
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.alert-success {
+    background-color: var(--priority-low-bg);
+    color: var(--priority-low-text);
+    border: 1px solid var(--priority-low-border);
+}
+
+.alert-danger {
+    background-color: var(--priority-high-bg);
+    color: var(--priority-high-text);
+    border: 1px solid var(--priority-high-border);
+}
+
+.alert-warning {
+    background-color: var(--priority-medium-bg);
+    color: var(--priority-medium-text);
+    border: 1px solid var(--priority-medium-border);
+}
+
+/* Charts Grid */
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Rankings & Details styling */
+.recommendation-text {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary-medium);
+    background-color: var(--bg-light);
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    border-left: 3px solid var(--accent-orange);
+}
+
+/* Filter panel on view_areas page */
+.filter-panel {
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) auto;
+    gap: 1.25rem;
+    align-items: end;
+}
+
+/* Footer Section */
+.footer {
+    background-color: #fff;
+    padding: 1.5rem 2rem;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .sidebar {
+        width: 70px;
+        padding: 2rem 0.5rem;
+    }
+    .sidebar-logo .logo-text, .sidebar-logo .logo-sub, .sidebar-link span, .sidebar-footer {
+        display: none;
+    }
+    .sidebar-logo {
+        justify-content: center;
+        margin-bottom: 1.5rem;
+    }
+    .sidebar-link {
+        justify-content: center;
+        padding: 1rem;
+    }
+    .main-wrapper {
+        margin-left: 70px;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+FILE: templates/base.html
+################################################################################
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STIP - {% block title %}{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-tower-broadcast"></i>
+                <div>
+                    <div class="logo-text">STIP</div>
+                    <div class="logo-sub">BSNL Portal</div>
+                </div>
+            </div>
+            <ul class="sidebar-menu">
+                {% if session.get('user_id') %}
+                <li>
+                    <a href="{{ url_for('dashboard') }}" class="sidebar-link {% if request.path == url_for('dashboard') %}active{% endif %}">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('add_area') }}" class="sidebar-link {% if request.path == url_for('add_area') %}active{% endif %}">
+                        <i class="fa-solid fa-plus-circle"></i>
+                        <span>Add Area</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('view_areas') }}" class="sidebar-link {% if request.path == url_for('view_areas') or '/edit/' in request.path %}active{% endif %}">
+                        <i class="fa-solid fa-list-check"></i>
+                        <span>View Areas</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('ranking') }}" class="sidebar-link {% if request.path == url_for('ranking') %}active{% endif %}">
+                        <i class="fa-solid fa-ranking-star"></i>
+                        <span>Rankings</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('analytics') }}" class="sidebar-link {% if request.path == url_for('analytics') %}active{% endif %}">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>Analytics</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('reports') }}" class="sidebar-link {% if request.path == url_for('reports') %}active{% endif %}">
+                        <i class="fa-solid fa-file-invoice"></i>
+                        <span>Reports</span>
+                    </a>
+                </li>
+                {% else %}
+                <li>
+                    <a href="{{ url_for('index') }}" class="sidebar-link {% if request.path == url_for('index') or request.path == '/' %}active{% endif %}">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('login') }}" class="sidebar-link {% if request.path == url_for('login') %}active{% endif %}">
+                        <i class="fa-solid fa-sign-in-alt"></i>
+                        <span>Login</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+            <div class="sidebar-footer">
+                <p>STIP v2.0</p>
+                <p>&copy; 2026 BSNL Planning</p>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <div class="main-wrapper">
+            <!-- Header Navbar -->
+            <header class="top-header">
+                <div class="header-title-section">
+                    <h2>Smart Telecom Infrastructure Planner (STIP)</h2>
+                </div>
+                <div class="header-user-section">
+                    <span style="font-size: 0.8rem; color: #10B981; font-weight: 600; background-color: rgba(16, 185, 129, 0.1); padding: 0.25rem 0.6rem; border-radius: 12px;">
+                        <i class="fa-solid fa-circle-nodes" style="margin-right: 4px;"></i> Circle Server: ACTIVE
+                    </span>
+                    {% if session.get('user_id') %}
+                    <div class="user-badge">
+                        <i class="fa-solid fa-user-shield"></i>
+                        <span>{{ session.get('username') }}</span>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="logout-btn-header">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('login') }}" class="btn-stip btn-accent-stip btn-sm-stip">
+                        <i class="fa-solid fa-sign-in-alt"></i> Engineer Portal
+                    </a>
+                    {% endif %}
+                </div>
+            </header>
+
+            <!-- Main Page Content -->
+            <main class="page-container">
+                <!-- Notifications panel -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {% if category == 'success' %}
+                                    <i class="fa-solid fa-check-circle"></i>
+                                {% elif category == 'danger' %}
+                                    <i class="fa-solid fa-exclamation-triangle"></i>
+                                {% else %}
+                                    <i class="fa-solid fa-info-circle"></i>
+                                {% endif %}
+                                <span>{{ message }}</span>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+            </main>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <p>Developed for Telecommunication Circle Expansion Planning. All rights reserved &copy; 2026.</p>
+            </footer>
+        </div>
+    </div>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+FILE: templates/index.html
+################################################################################
+
+{% extends 'base.html' %}
+
+{% block title %}Welcome - Smart Telecom Infrastructure Planner{% endblock %}
+
+{% block content %}
+<div class="landing-hero" style="border-radius: 12px; margin-bottom: 2rem;">
+    <h1>Smart Telecom Infrastructure Planner (STIP)</h1>
+    <p>An advanced analytical decision support system designed for telecom circles to prioritize geographical regions for infrastructural roll-outs, capacity upgrades, and backhaul expansion.</p>
+    <div>
+        {% if session.get('user_id') %}
+        <a href="{{ url_for('dashboard') }}" class="btn-stip btn-accent-stip" style="font-size: 1.1rem; padding: 0.8rem 2rem;">
+            <i class="fa-solid fa-gauge-high"></i> Go to Dashboard
+        </a>
+        {% else %}
+        <a href="{{ url_for('login') }}" class="btn-stip btn-accent-stip" style="font-size: 1.1rem; padding: 0.8rem 2rem;">
+            <i class="fa-solid fa-sign-in-alt"></i> Access Engineer Portal
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="stip-card">
+    <div class="card-title-container">
+        <h3><i class="fa-solid fa-circle-info" style="color: var(--accent-orange); margin-right: 8px;"></i> Project Abstract & Scope</h3>
+    </div>
+    <p style="font-size: 1.05rem; margin-bottom: 1.25rem;">
+        The rapid growth of telecommunication services has increased the demand for efficient planning and optimal utilization of network infrastructure. Telecom service providers often face challenges in deciding which geographical areas should be prioritized for network expansion or infrastructure upgrades due to limited resources and increasing customer demands.
+    </p>
+    <p style="font-size: 1.05rem;">
+        To address this issue, <b>STIP</b> automates data processing and visualization, providing telecom engineers with a data-driven approach to prioritize areas requiring network improvement. The system leverages the <b>Telecom Infrastructure Priority Index (TIPI)</b> score calculated via a weighted multi-criteria algorithm to identify circles in critical need of expansion, optimizing resource allocation.
+    </p>
+</div>
+
+<div class="features-section">
+    <h2 style="text-align: center; margin-bottom: 1.5rem;">Key Core Modules</h2>
+    <div class="features-grid">
+        <div class="feature-box">
+            <i class="fa-solid fa-map-location-dot"></i>
+            <h3>Area Management</h3>
+            <p>Maintain detailed geographical profiles of circles including population demographics, transceiver status, and fiber details.</p>
+        </div>
+        <div class="feature-box">
+            <i class="fa-solid fa-calculator"></i>
+            <h3>Priority Calculator</h3>
+            <p>Runs a normalized, weighted scoring model mapping multi-dimensional factors to a consolidated TIPI priority index score (0-100).</p>
+        </div>
+        <div class="feature-box">
+            <i class="fa-solid fa-chart-column"></i>
+            <h3>Interactive Analytics</h3>
+            <p>Rich graphic charts tracking technology distribution, complaint heatmaps, and correlation plots between populations and index values.</p>
+        </div>
+        <div class="feature-box">
+            <i class="fa-solid fa-file-pdf"></i>
+            <h3>Report Generation</h3>
+            <p>Export planning indexes, circle statistics, and concrete infrastructure recommendations to Excel, PDF, or direct Print sheets.</p>
+        </div>
+    </div>
+</div>
+
+<div class="stip-card" style="background-color: var(--primary-dark); color: #fff;">
+    <h3 style="color: #fff; margin-bottom: 1rem;"><i class="fa-solid fa-gears" style="color: var(--accent-orange); margin-right: 8px;"></i> Decision Support Parameters</h3>
+    <p style="margin-bottom: 1.5rem; color: var(--primary-light);">The TIPI algorithm evaluates the following weights to determine priority scores:</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+        <div style="background-color: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; border-left: 3px solid var(--accent-orange);">
+            <strong style="color: #fff;">Customer Complaints (20%)</strong>
+            <p style="font-size: 0.85rem; color: var(--primary-light); margin-top: 0.25rem;">Prioritizes regions with high ticket volumes and poor user experience.</p>
+        </div>
+        <div style="background-color: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; border-left: 3px solid var(--accent-orange);">
+            <strong style="color: #fff;">Signal Strength (20%)</strong>
+            <p style="font-size: 0.85rem; color: var(--primary-light); margin-top: 0.25rem;">Inverse-weighted to prioritize poor RF coverage zones.</p>
+        </div>
+        <div style="background-color: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; border-left: 3px solid var(--accent-orange);">
+            <strong style="color: #fff;">Circle Population (15%)</strong>
+            <p style="font-size: 0.85rem; color: var(--primary-light); margin-top: 0.25rem;">Maximizes ROI by weighting highly populated rural and urban zones.</p>
+        </div>
+        <div style="background-color: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; border-left: 3px solid var(--accent-orange);">
+            <strong style="color: #fff;">Network Technology (15%)</strong>
+            <p style="font-size: 0.85rem; color: var(--primary-light); margin-top: 0.25rem;">Weights legacy networks (2G/3G) to target 4G/5G upgrade cycles.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+FILE: templates/login.html
+################################################################################
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STIP - Engineer Login</title>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="login-body">
+    <div class="login-card">
+        <div class="login-header">
+            <i class="fa-solid fa-tower-broadcast"></i>
+            <h2>BSNL STIP Portal</h2>
+            <p>Authorized Engineer Login</p>
+        </div>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('login') }}" method="POST">
+            <div class="form-group">
+                <label for="username" class="form-label">Username</label>
+                <div style="position: relative;">
+                    <i class="fa-solid fa-user" style="position: absolute; left: 12px; top: 12px; color: var(--text-muted);"></i>
+                    <input type="text" id="username" name="username" class="form-control-stip" placeholder="Enter username" style="padding-left: 2.25rem;" required>
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="password" class="form-label">Password</label>
+                <div style="position: relative;">
+                    <i class="fa-solid fa-lock" style="position: absolute; left: 12px; top: 12px; color: var(--text-muted);"></i>
+                    <input type="password" id="password" name="password" class="form-control-stip" placeholder="Enter password" style="padding-left: 2.25rem;" required>
+                </div>
+            </div>
+            <button type="submit" class="btn-stip btn-accent-stip" style="width: 100%; padding: 0.75rem; font-size: 1rem; border-radius: 8px;">
+                <i class="fa-solid fa-right-to-bracket"></i> Login
+            </button>
+        </form>
+
+        <div style="margin-top: 1.5rem; padding: 0.75rem; background-color: var(--bg-light); border-radius: 8px; border-left: 3px solid var(--primary-medium); font-size: 0.8rem; color: var(--text-muted);">
+            <strong style="color: var(--primary-dark);"><i class="fa-solid fa-circle-info"></i> Simulation Mode Credentials:</strong>
+            <div style="margin-top: 0.25rem;">
+                Username: <code>admin</code><br>
+                Password: <code>admin123</code>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <a href="{{ url_for('index') }}" style="color: var(--primary-medium); text-decoration: none; font-size: 0.85rem; font-weight: 500;">
+                <i class="fa-solid fa-arrow-left"></i> Back to Homepage
+            </a>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+FILE: templates/dashboard.html
+################################################################################
+
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Smart Telecom Infrastructure Planner{% endblock %}
+
+{% block content %}
+<div class="metrics-grid">
+    <!-- Total Areas -->
+    <div class="metric-card total-a">
+        <div class="metric-icon">
+            <i class="fa-solid fa-map-location-dot"></i>
+        </div>
+        <div class="metric-details">
+            <h4>Total Areas</h4>
+            <div class="metric-value">{{ total_areas }}</div>
+        </div>
+    </div>
+    <!-- High Priority -->
+    <div class="metric-card high-p">
+        <div class="metric-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div class="metric-details">
+            <h4>High Priority</h4>
+            <div class="metric-value">{{ high_count }}</div>
+        </div>
+    </div>
+    <!-- Medium Priority -->
+    <div class="metric-card med-p">
+        <div class="metric-icon">
+            <i class="fa-solid fa-circle-exclamation"></i>
+        </div>
+        <div class="metric-details">
+            <h4>Medium Priority</h4>
+            <div class="metric-value">{{ med_count }}</div>
+        </div>
+    </div>
+    <!-- Low Priority -->
+    <div class="metric-card low-p">
+        <div class="metric-icon">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div class="metric-details">
+            <h4>Low Priority</h4>
+            <div class="metric-value">{{ low_count }}</div>
+        </div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+    <!-- Excel upload block -->
+    <div class="stip-card">
+        <div class="card-title-container">
+            <h3><i class="fa-solid fa-file-excel" style="color: #10B981; margin-right: 8px;"></i> Batch Upload Circle Data</h3>
+            <a href="{{ url_for('download_template') }}" class="btn-stip btn-outline-stip btn-sm-stip" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">
+                <i class="fa-solid fa-download"></i> Download Template
+            </a>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            Upload an Excel spreadsheet with circle parameters to automatically calculate TIPI priority indexes and bulk import data.
+        </p>
+        <form action="{{ url_for('upload_file') }}" method="POST" enctype="multipart/form-data">
+            <div class="upload-zone" onclick="document.getElementById('excelFile').click()">
+                <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                <h5 id="upload-status-text">Click to choose Excel sheet</h5>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Supports .xlsx and .xls formats</p>
+                <input type="file" id="excelFile" name="file" accept=".xlsx, .xls" style="display: none;" onchange="updateUploadLabel(this)">
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+                <button type="submit" class="btn-stip btn-accent-stip">
+                    <i class="fa-solid fa-upload"></i> Import and Recalculate
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Quick Navigation -->
+    <div class="stip-card">
+        <div class="card-title-container">
+            <h3><i class="fa-solid fa-compass" style="color: var(--accent-orange); margin-right: 8px;"></i> Quick Navigation</h3>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.5rem;">
+            <a href="{{ url_for('add_area') }}" class="btn-stip btn-primary-stip" style="padding: 1rem; flex-direction: column; gap: 0.5rem; height: 100%;">
+                <i class="fa-solid fa-plus-circle" style="font-size: 1.5rem;"></i>
+                <span>Add Single Area</span>
+            </a>
+            <a href="{{ url_for('view_areas') }}" class="btn-stip btn-primary-stip" style="padding: 1rem; flex-direction: column; gap: 0.5rem; height: 100%;">
+                <i class="fa-solid fa-list-check" style="font-size: 1.5rem;"></i>
+                <span>View All Circles</span>
+            </a>
+            <a href="{{ url_for('ranking') }}" class="btn-stip btn-primary-stip" style="padding: 1rem; flex-direction: column; gap: 0.5rem; height: 100%;">
+                <i class="fa-solid fa-ranking-star" style="font-size: 1.5rem;"></i>
+                <span>Priority Rankings</span>
+            </a>
+            <a href="{{ url_for('analytics') }}" class="btn-stip btn-primary-stip" style="padding: 1rem; flex-direction: column; gap: 0.5rem; height: 100%;">
+                <i class="fa-solid fa-chart-pie" style="font-size: 1.5rem;"></i>
+                <span>View Analytics</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 1.5rem;">
+    <!-- Top Priority Areas -->
+    <div class="stip-card">
+        <div class="card-title-container">
+            <h3><i class="fa-solid fa-fire" style="color: var(--priority-high-text); margin-right: 8px;"></i> Critical Action Areas</h3>
+            <span class="badge-priority high" style="padding: 0.15rem 0.5rem; font-size: 0.7rem;">Top 5 Urgent</span>
+        </div>
+        <div class="table-responsive">
+            <table class="stip-table">
+                <thead>
+                    <tr>
+                        <th>Area Name</th>
+                        <th style="text-align: center;">Tech</th>
+                        <th style="text-align: center;">TIPI Score</th>
+                        <th style="text-align: center;">Category</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for area in top_priority %}
+                    <tr>
+                        <td><strong>{{ area.name }}</strong></td>
+                        <td style="text-align: center;"><span class="tech-tag net-{{ area.network_type.lower() }}">{{ area.network_type }}</span></td>
+                        <td style="text-align: center; font-weight: 700; color: var(--primary-medium);">{{ area.priority_score }}</td>
+                        <td style="text-align: center;"><span class="badge-priority {{ area.category.lower() }}">{{ area.category }}</span></td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: var(--text-muted);">No areas registered yet. Click Add Area or upload Excel data.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent Circles -->
+    <div class="stip-card">
+        <div class="card-title-container">
+            <h3><i class="fa-solid fa-clock-rotate-left" style="color: var(--primary-medium); margin-right: 8px;"></i> Recently Registered</h3>
+            <a href="{{ url_for('view_areas') }}" style="font-size: 0.8rem; font-weight: 600; color: var(--primary-medium); text-decoration: none;">View All</a>
+        </div>
+        <div class="table-responsive">
+            <table class="stip-table">
+                <thead>
+                    <tr>
+                        <th>Area Name</th>
+                        <th style="text-align: center;">Signal</th>
+                        <th style="text-align: center;">Complaints</th>
+                        <th style="text-align: center;">Fiber</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for area in recent_areas %}
+                    <tr>
+                        <td><strong>{{ area.name }}</strong></td>
+                        <td style="text-align: center;">
+                            {% for i in range(area.signal_strength) %}<i class="fa-solid fa-signal" style="color: #10B981; font-size: 0.8rem;"></i>{% endfor %}
+                            {% for i in range(5 - area.signal_strength) %}<i class="fa-solid fa-signal" style="color: #cbd5e0; font-size: 0.8rem;"></i>{% endfor %}
+                        </td>
+                        <td style="text-align: center; font-weight: 600;">{{ area.complaints }}</td>
+                        <td style="text-align: center;"><span class="fiber-badge {{ area.fiber.lower() }}">{{ area.fiber }}</span></td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: var(--text-muted);">No areas registered yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function updateUploadLabel(input) {
+    const statusText = document.getElementById('upload-status-text');
+    if (input.files && input.files.length > 0) {
+        statusText.innerHTML = `<i class="fa-solid fa-file-circle-check" style="color: #10B981;"></i> Chosen File: <strong>${input.files[0].name}</strong>`;
+        statusText.parentElement.style.borderColor = "#10B981";
+        statusText.parentElement.style.backgroundColor = "rgba(16, 185, 129, 0.05)";
+    } else {
+        statusText.innerText = "Click to choose Excel sheet";
+    }
+}
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+FILE: templates/add_area.html
+################################################################################
+
+{% extends 'base.html' %}
+
+{% block title %}{% if area %}Edit Area - {{ area.name }}{% else %}Add Area{% endif %} - Smart Telecom Infrastructure Planner{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div class="stip-card">
+        <div class="card-title-container">
+            <h3>
+                <i class="fa-solid {% if area %}fa-pen-to-square{% else %}fa-plus-circle{% endif %}" style="color: var(--accent-orange); margin-right: 8px;"></i>
+                {% if area %}Edit Telecom Circle: {{ area.name }}{% else %}Register New Telecom Circle{% endif %}
+            </h3>
+            <a href="{{ url_for('view_areas') }}" class="btn-stip btn-outline-stip btn-sm-stip">
+                <i class="fa-solid fa-arrow-left"></i> Back to Circles List
+            </a>
+        </div>
+        
+        <form action="{% if area %}{{ url_for('edit_area', id=area.id) }}{% else %}{{ url_for('add_area') }}{% endif %}" method="POST">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <!-- Column 1 -->
+                <div>
+                    <div class="form-group">
+                        <label for="name" class="form-label">Area / Circle Name</label>
+                        <input type="text" id="name" name="name" class="form-control-stip" placeholder="e.g. Maharashtra Circle - Jalgaon Rural" value="{% if area %}{{ area.name }}{% endif %}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="population" class="form-label">Population</label>
+                        <input type="number" id="population" name="population" class="form-control-stip" placeholder="e.g. 45000" min="0" value="{% if area %}{{ area.population }}{% endif %}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signal_strength" class="form-label">Signal Strength (1 - 5)</label>
+                        <select id="signal_strength" name="signal_strength" class="form-control-stip" required>
+                            <option value="" disabled selected>Select Signal Quality</option>
+                            <option value="1" {% if area and area.signal_strength == 1 %}selected{% endif %}>1 - Extremely Poor Coverage</option>
+                            <option value="2" {% if area and area.signal_strength == 2 %}selected{% endif %}>2 - Weak Signal (Coverage gaps)</option>
+                            <option value="3" {% if area and area.signal_strength == 3 %}selected{% endif %}>3 - Adequate Signal (Standard)</option>
+                            <option value="4" {% if area and area.signal_strength == 4 %}selected{% endif %}>4 - Strong Signal (Good)</option>
+                            <option value="5" {% if area and area.signal_strength == 5 %}selected{% endif %}>5 - Excellent Coverage (Full signal)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="distance" class="form-label">Distance from Nearest Cell Site (km)</label>
+                        <input type="number" step="0.1" id="distance" name="distance" class="form-control-stip" placeholder="e.g. 4.8" min="0" value="{% if area %}{{ area.distance }}{% endif %}" required>
+                    </div>
+                </div>
+                
+                <!-- Column 2 -->
+                <div>
+                    <div class="form-group">
+                        <label for="internet_users" class="form-label">Internet Penetration (%)</label>
+                        <input type="number" id="internet_users" name="internet_users" class="form-control-stip" placeholder="e.g. 65" min="0" max="100" value="{% if area %}{{ area.internet_users }}{% endif %}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="complaints" class="form-label">Monthly Customer Complaints</label>
+                        <input type="number" id="complaints" name="complaints" class="form-control-stip" placeholder="e.g. 75" min="0" value="{% if area %}{{ area.complaints }}{% endif %}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fiber" class="form-label">Fiber Backhaul Available</label>
+                        <select id="fiber" name="fiber" class="form-control-stip" required>
+                            <option value="" disabled selected>Select Fiber Status</option>
+                            <option value="Yes" {% if area and area.fiber == 'Yes' %}selected{% endif %}>Yes (Fiber backhaul deployed)</option>
+                            <option value="No" {% if area and area.fiber == 'No' %}selected{% endif %}>No (Microwave link or copper line only)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="network_type" class="form-label">Current Transceiver Technology (BTS)</label>
+                        <select id="network_type" name="network_type" class="form-control-stip" required>
+                            <option value="" disabled selected>Select Tech</option>
+                            <option value="2G" {% if area and area.network_type == '2G' %}selected{% endif %}>2G (Legacy GSM)</option>
+                            <option value="3G" {% if area and area.network_type == '3G' %}selected{% endif %}>3G (WCDMA/HSPA)</option>
+                            <option value="4G" {% if area and area.network_type == '4G' %}selected{% endif %}>4G (LTE coverage)</option>
+                            <option value="5G" {% if area and area.network_type == '5G' %}selected{% endif %}>5G (New Radio)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="border-top: 1px solid var(--border-color); padding-top: 1.25rem; display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
+                <button type="reset" class="btn-stip btn-outline-stip">
+                    <i class="fa-solid fa-rotate-left"></i> Reset Form
+                </button>
+                <button type="submit" class="btn-stip btn-accent-stip" style="padding-left: 2rem; padding-right: 2rem;">
+                    <i class="fa-solid fa-save"></i> {% if area %}Save Changes{% else %}Calculate & Save{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+FILE: templates/view_area.html
+################################################################################
+
+{% extends 'base.html' %}
+
+{% block title %}View Areas - Smart Telecom Infrastructure Planner{% endblock %}
+
+{% block content %}
+<div class="filter-panel">
+    <div class="card-title-container" style="border: none; margin-bottom: 0.5rem; padding-bottom: 0;">
+        <h4><i class="fa-solid fa-filter" style="color: var(--primary-medium); margin-right: 6px;"></i> Search and Filter Circles</h4>
+    </div>
+    <form action="{{ url_for('view_areas') }}" method="GET">
+        <div class="filter-grid">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="search" class="form-label">Search Name</label>
+                <input type="text" id="search" name="search" class="form-control-stip" placeholder="e.g. Maharashtra" value="{{ search }}">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="network_type" class="form-label">Technology</label>
+                <select id="network_type" name="network_type" class="form-control-stip">
+                    <option value="">All Technologies</option>
+                    <option value="2G" {% if network_type == '2G' %}selected{% endif %}>2G (GSM)</option>
+                    <option value="3G" {% if network_type == '3G' %}selected{% endif %}>3G (WCDMA)</option>
+                    <option value="4G" {% if network_type == '4G' %}selected{% endif %}>4G (LTE)</option>
+                    <option value="5G" {% if network_type == '5G' %}selected{% endif %}>5G (NR)</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="category" class="form-label">Priority</label>
+                <select id="category" name="category" class="form-control-stip">
+                    <option value="">All Priorities</option>
+                    <option value="High" {% if category == 'High' %}selected{% endif %}>High Priority</option>
+                    <option value="Medium" {% if category == 'Medium' %}selected{% endif %}>Medium Priority</option>
+                    <option value="Low" {% if category == 'Low' %}selected{% endif %}>Low Priority</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <button type="submit" class="btn-stip btn-primary-stip">
+                    <i class="fa-solid fa-search"></i> Search
+                </button>
+                <a href="{{ url_for('view_areas') }}" class="btn-stip btn-outline-stip">
+                    Clear
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="stip-card">
+    <div class="card-title-container">
+        <h3><i class="fa-solid fa-list-check" style="color: var(--accent-orange); margin-right: 8px;"></i> Registered Circle Records</h3>
+        <a href="{{ url_for('add_area') }}" class="btn-stip btn-accent-stip btn-sm-stip">
+            <i class="fa-solid fa-plus-circle"></i> Add New Area
+        </a>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="stip-table">
+            <thead>
+                <tr>
+                    <th style="width: 50px; text-align: center;">ID</th>
+                    <th>Area / Circle Name</th>
+                    <th style="text-align: right;">Population</th>
+                    <th style="text-align: center;">Signal</th>
+                    <th style="text-align: center;">Distance</th>
+                    <th style="text-align: center;">Complaints</th>
+                    <th style="text-align: center;">Fiber</th>
+                    <th style="text-align: center;">Tech</th>
+                    <th style="text-align: center;">TIPI Score</th>
+                    <th style="text-align: center;">Category</th>
+                    <th style="width: 180px; text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for area in areas %}
+                <tr>
+                    <td style="text-align: center; color: var(--text-muted);">{{ area.id }}</td>
+                    <td><strong>{{ area.name }}</strong></td>
+                    <td style="text-align: right;">{{ area.population }}</td>
+                    <td style="text-align: center;">
+                        <span title="Signal quality: {{ area.signal_strength }}/5">
+                            {% for i in range(area.signal_strength) %}<i class="fa-solid fa-signal" style="color: #10B981; font-size: 0.85rem;"></i>{% endfor %}
+                            {% for i in range(5 - area.signal_strength) %}<i class="fa-solid fa-signal" style="color: #cbd5e0; font-size: 0.85rem;"></i>{% endfor %}
+                        </span>
+                    </td>
+                    <td style="text-align: center;">{{ area.distance }} km</td>
+                    <td style="text-align: center; font-weight: 600;">{{ area.complaints }}</td>
+                    <td style="text-align: center;"><span class="fiber-badge {{ area.fiber.lower() }}">{{ area.fiber }}</span></td>
+                    <td style="text-align: center;"><span class="tech-tag net-{{ area.network_type.lower() }}">{{ area.network_type }}</span></td>
+                    <td style="text-align: center; font-weight: 700; color: var(--primary-medium);">{{ area.priority_score }}</td>
+                    <td style="text-align: center;"><span class="badge-priority {{ area.category.lower() }}">{{ area.category }}</span></td>
+                    <td style="text-align: center;">
+                        <div style="display: flex; gap: 0.4rem; justify-content: center;">
+                            <button class="btn-stip btn-outline-stip btn-sm-stip" style="padding: 0.3rem 0.5rem; font-size: 0.75rem;" onclick='openDetailModal({{ dict(area)|tojson }})'>
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <a href="{{ url_for('edit_area', id=area.id) }}" class="btn-stip btn-primary-stip btn-sm-stip" style="padding: 0.3rem 0.5rem; font-size: 0.75rem;">
+                                <i class="fa-solid fa-edit"></i>
+                            </a>
+                            <form action="{{ url_for('delete_area', id=area.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this circle record? This action cannot be undone.');" style="display: inline;">
+                                <button type="submit" class="btn-stip btn-sm-stip" style="background-color: var(--priority-high-bg); color: var(--priority-high-text); border: 1px solid var(--priority-high-border); padding: 0.3rem 0.5rem; font-size: 0.75rem;">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="11" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                        <i class="fa-solid fa-folder-open" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
+                        No circles matching the search criteria were found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Circle Detail Modal -->
+<div id="detailModal" style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100vw; height: 100vh; background-color: rgba(11, 37, 69, 0.5); backdrop-filter: blur(5px); justify-content: center; align-items: center;">
+    <div class="stip-card" style="width: 90%; max-width: 600px; padding: 2rem; background-color: #fff; border-radius: 16px; box-shadow: var(--shadow-lg); border: 1px solid var(--primary-medium);">
+        <div class="card-title-container">
+            <h3 id="m-title"><i class="fa-solid fa-circle-info" style="color: var(--accent-orange); margin-right: 8px;"></i> Circle Details</h3>
+            <span class="badge-priority" id="m-category" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;"></span>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+            <div>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Population Demographics</p>
+                <p style="font-size: 1.1rem; font-weight: 700;" id="m-pop"></p>
+            </div>
+            <div>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Internet Penetration</p>
+                <p style="font-size: 1.1rem; font-weight: 700;" id="m-users"></p>
+            </div>
+            <div>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Signal Strength Quality</p>
+                <p style="font-size: 1.1rem; font-weight: 700;" id="m-sig"></p>
+            </div>
+            <div>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Distance to Cell Site</p>
+                <p style="font-size: 1.1rem; font-weight: 700;" id="m-dist"></p>
+            </div>
+            <div>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Current Tech & Fiber</p>
+                <p style="font-size: 1.1rem; font-weight: 700;"><span class="tech-tag" id="m-tech"></span> / Fiber: <span id="m-fiber" style="font-weight: 700;"></span></p>
+            </div>
+            <div>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Monthly complaints</p>
+                <p style="font-size: 1.1rem; font-weight: 700;" id="m-complaints"></p>
+            </div>
+        </div>
+        
+        <div style="margin-top: 1.25rem; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <span style="font-size: 0.85rem; color: var(--text-muted); display: block;">TIPI priority Score:</span>
+                <span style="font-size: 2rem; font-weight: 800; color: var(--primary-dark);" id="m-score"></span>
+            </div>
+            <button class="btn-stip btn-primary-stip" onclick="closeDetailModal()">
+                <i class="fa-solid fa-circle-xmark"></i> Close Details
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function openDetailModal(area) {
+    document.getElementById('m-title').innerHTML = `<i class="fa-solid fa-tower-broadcast" style="color: var(--accent-orange); margin-right: 8px;"></i> ${area.name}`;
+    document.getElementById('m-pop').innerText = area.population.toLocaleString();
+    document.getElementById('m-users').innerText = area.internet_users + "%";
+    
+    let sigText = area.signal_strength + "/5 (";
+    if (area.signal_strength <= 2) sigText += "Poor)";
+    else if (area.signal_strength <= 4) sigText += "Good)";
+    else sigText += "Excellent)";
+    document.getElementById('m-sig').innerText = sigText;
+    
+    document.getElementById('m-dist').innerText = area.distance + " km";
+    
+    const mTech = document.getElementById('m-tech');
+    mTech.innerText = area.network_type;
+    mTech.className = "tech-tag net-" + area.network_type.toLowerCase();
+    
+    const mFiber = document.getElementById('m-fiber');
+    mFiber.innerText = area.fiber;
+    mFiber.className = area.fiber === 'Yes' ? 'fiber-badge yes' : 'fiber-badge no';
+    
+    document.getElementById('m-complaints').innerText = area.complaints + " tickets";
+    document.getElementById('m-score').innerText = area.priority_score;
+    
+    const mCategory = document.getElementById('m-category');
+    mCategory.innerText = area.category + " Priority";
+    mCategory.className = "badge-priority " + area.category.toLowerCase();
+    
+    document.getElementById('detailModal').style.display = "flex";
+}
+
+function closeDetailModal() {
+    document.getElementById('detailModal').style.display = "none";
+}
+
+// Close modal on escape key or clicking outside
+window.addEventListener('click', function(e) {
+    const modal = document.getElementById('detailModal');
+    if (e.target === modal) {
+        closeDetailModal();
+    }
+});
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+FILE: templates/ranking.html
+################################################################################
+
+{% extends 'base.html' %}
+
+{% block title %}Rankings - Smart Telecom Infrastructure Planner{% endblock %}
+
+{% block content %}
+<div class="stip-card">
+    <div class="card-title-container">
+        <div>
+            <h3><i class="fa-solid fa-ranking-star" style="color: var(--accent-orange); margin-right: 8px;"></i> Circle Infrastructure Priority Rankings</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">Sorted by TIPI priority index score. Circles at the top require immediate expansion and capital allocation.</p>
+        </div>
+        <form action="{{ url_for('calculate_priority') }}" method="POST">
+            <button type="submit" class="btn-stip btn-accent-stip">
+                <i class="fa-solid fa-calculator"></i> Run Recalculation Engine
+            </button>
+        </form>
+    </div>
+    
+    <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+        {% for area in areas %}
+        <div class="stip-card" style="margin-bottom: 0; display: flex; align-items: center; justify-content: space-between; border-left: 5px solid 
+            {% if area.category == 'High' %}var(--priority-high-border)
+            {% elif area.category == 'Medium' %}var(--priority-medium-border)
+            {% else %}var(--priority-low-border){% endif %}; padding: 1.25rem;">
+            
+            <div style="display: flex; align-items: center; gap: 1.5rem; flex: 1;">
+                <!-- Rank Badge -->
+                <div style="width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 800; 
+                    {% if area.rank == 1 %}background-color: #FEF3C7; color: #D97706; border: 2px solid #FCD34D;
+                    {% elif area.rank == 2 %}background-color: #F3F4F6; color: #4B5563; border: 2px solid #D1D5DB;
+                    {% elif area.rank == 3 %}background-color: #FFE4E6; color: #BE123C; border: 2px solid #FDA4AF;
+                    {% else %}background-color: var(--bg-light); color: var(--primary-medium);{% endif %}">
+                    {% if area.rank <= 3 %}<i class="fa-solid fa-trophy" style="font-size: 0.8rem; margin-right: 2px;"></i>{% endif %}{{ area.rank }}
+                </div>
+                
+                <div style="flex: 1;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <h4 style="font-size: 1.15rem; font-weight: 700;">{{ area.name }}</h4>
+                        <span class="tech-tag net-{{ area.network_type.lower() }}">{{ area.network_type }}</span>
+                        <span class="badge-priority {{ area.category.lower() }}" style="font-size: 0.7rem; padding: 0.15rem 0.5rem;">{{ area.category }} Priority</span>
+                    </div>
+                    
+                    <!-- Recommendation Text -->
+                    <div style="margin-top: 0.5rem; font-size: 0.85rem;" class="recommendation-text">
+                        <strong>Recommendation:</strong> {{ area.recommendation }}
+                    </div>
+                    
+                    <!-- Key Gaps checklist -->
+                    <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-muted);">
+                        <span><i class="fa-solid {% if area.fiber == 'No' %}fa-circle-xmark text-danger{% else %}fa-circle-check text-success{% endif %}" style="margin-right: 4px;"></i> Fiber Backhaul</span>
+                        <span><i class="fa-solid {% if area.network_type in ['2G', '3G'] %}fa-circle-xmark text-danger{% else %}fa-circle-check text-success{% endif %}" style="margin-right: 4px;"></i> Upgrade Ready</span>
+                        <span><i class="fa-solid {% if area.population > 60000 %}fa-arrow-trend-up text-primary{% else %}fa-arrow-trend-down text-muted{% endif %}" style="margin-right: 4px;"></i> Population Density</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: right; margin-left: 2rem; border-left: 1px solid var(--border-color); padding-left: 1.5rem; width: 120px;">
+                <span style="font-size: 0.75rem; color: var(--text-muted); display: block; text-transform: uppercase; font-weight: 600;">TIPI INDEX</span>
+                <span style="font-size: 2.2rem; font-weight: 800; font-family: 'Outfit', sans-serif; color: var(--primary-dark); line-height: 1;">{{ area.priority_score }}</span>
+            </div>
+            
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+            <i class="fa-solid fa-ranking-star" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
+            No circles registered yet.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.text-danger { color: var(--priority-high-text) !important; }
+.text-success { color: var(--priority-low-text) !important; }
+.text-primary { color: var(--primary-medium) !important; }
+</style>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+FILE: templates/analytics.html
+################################################################################
+
+{% extends 'base.html' %}
+
+{% block title %}Analytics - Smart Telecom Infrastructure Planner{% endblock %}
+
+{% block content %}
+<div class="charts-grid">
+    <!-- Top 10 Priority Areas -->
+    <div class="stip-card">
+        <div class="card-title-container">
+            <h3><i class="fa-solid fa-chart-bar" style="color: var(--accent-orange); margin-right: 8px;"></i> Top 10 Priority Areas</h3>
+        </div>
+        <div style="height: 320px; position: relative;">
+            <canvas id="topPriorityChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Network Technology Distribution -->
+    <div class="stip-card">
+        <div class="card-title-container">
+            <h3><i class="fa-solid fa-chart-pie" style="color: var(--accent-orange); margin-right: 8px;"></i> Technology Distribution (BTS)</h3>
+        </div>
+        <div style="height: 320px; position: relative; display: flex; justify-content: center;">
+            <canvas id="techDistributionChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Priority Category Distribution -->
+    <div class="stip-card">
+        <div class="card-title-container">
+            <h3><i class="fa-solid fa-chart-gantt" style="color: var(--accent-orange); margin-right: 8px;"></i> Circle Priority Shares</h3>
+        </div>
+        <div style="height: 320px; position: relative; display: flex; justify-content: center;">
+            <canvas id="categoryShareChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Population vs Priority Scatter -->
+    <div class="stip-card">
+        <div class="card-title-container">
+            <h3><i class="fa-solid fa-chart-line" style="color: var(--accent-orange); margin-right: 8px;"></i> Population vs. TIPI Priority</h3>
+        </div>
+        <div style="height: 320px; position: relative;">
+            <canvas id="scatterChart"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    fetch('/api/chart-data')
+        .then(response => response.json())
+        .then(data => {
+            initTopPriorityChart(data.top_10);
+            initTechChart(data.net_types);
+            initCategoryChart(data.categories);
+            initScatterChart(data.scatter);
+        })
+        .catch(err => console.error("Error loading chart data:", err));
+});
+
+function initTopPriorityChart(top10) {
+    const ctx = document.getElementById('topPriorityChart').getContext('2d');
+    const labels = top10.map(item => item.name);
+    const scores = top10.map(item => item.score);
+    
+    // Assign colors dynamically based on category
+    const colors = top10.map(item => {
+        if (item.category === 'High') return '#EF4444'; // Crimson
+        if (item.category === 'Medium') return '#F59E0B'; // Amber
+        return '#10B981'; // Emerald
+    });
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'TIPI Score',
+                data: scores,
+                backgroundColor: colors,
+                borderColor: colors.map(c => c + 'CC'),
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    min: 0,
+                    max: 100,
+                    grid: { color: '#E2E8F0' },
+                    ticks: { color: '#718096' }
+                },
+                y: {
+                    grid: { display: false },
+                    ticks: { color: '#4A5568', font: { weight: 'bold' } }
+                }
+            }
+        }
+    });
+}
+
+function initTechChart(netTypes) {
+    const ctx = document.getElementById('techDistributionChart').getContext('2d');
+    const labels = Object.keys(netTypes);
+    const counts = Object.values(netTypes);
+
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: counts,
+                backgroundColor: ['#8B5CF6', '#3B82F6', '#06B6D4', '#6B7280'], // 5G, 4G, 3G, 2G colors
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { boxWidth: 15, padding: 15, color: '#4A5568', font: { weight: 'bold' } }
+                }
+            },
+            cutout: '60%'
+        }
+    });
+}
+
+function initCategoryChart(categories) {
+    const ctx = document.getElementById('categoryShareChart').getContext('2d');
+    const labels = Object.keys(categories);
+    const counts = Object.values(categories);
+
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: counts,
+                backgroundColor: ['#EF4444', '#F59E0B', '#10B981'], // High, Medium, Low colors
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { boxWidth: 15, padding: 15, color: '#4A5568', font: { weight: 'bold' } }
+                }
+            }
+        }
+    });
+}
+
+function initScatterChart(scatterData) {
+    const ctx = document.getElementById('scatterChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'scatter',
+        data: {
+            datasets: [{
+                label: 'Circles',
+                data: scatterData,
+                backgroundColor: '#EE6C4D',
+                borderColor: '#EE6C4D',
+                pointRadius: 6,
+                pointHoverRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const p = context.raw;
+                            return `${p.label} (Pop: ${p.x.toLocaleString()}, Score: ${p.y})`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: { display: true, text: 'Population', color: '#4A5568', font: { weight: 'bold' } },
+                    grid: { color: '#E2E8F0' },
+                    ticks: { color: '#718096' }
+                },
+                y: {
+                    title: { display: true, text: 'TIPI Index (0-100)', color: '#4A5568', font: { weight: 'bold' } },
+                    min: 0,
+                    max: 100,
+                    grid: { color: '#E2E8F0' },
+                    ticks: { color: '#718096' }
+                }
+            }
+        }
+    });
+}
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+FILE: templates/report.html
+################################################################################
+
+{% extends 'base.html' %}
+
+{% block title %}Reports - Smart Telecom Infrastructure Planner{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+    <!-- Export Options Card -->
+    <div class="stip-card">
+        <div class="card-title-container">
+            <h3><i class="fa-solid fa-file-invoice" style="color: var(--accent-orange); margin-right: 8px;"></i> Export Planning Reports</h3>
+        </div>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+            Generate and download formatted data spreadsheets, professional PDF reports, or launch the system print manager.
+        </p>
+        
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <a href="{{ url_for('export_pdf') }}" class="btn-stip btn-primary-stip" style="padding: 0.85rem; justify-content: flex-start; background-color: #B91C1C;">
+                <i class="fa-solid fa-file-pdf" style="font-size: 1.25rem; width: 25px;"></i>
+                <span>Download Professional PDF Report</span>
+            </a>
+            <a href="{{ url_for('export_excel') }}" class="btn-stip btn-primary-stip" style="padding: 0.85rem; justify-content: flex-start; background-color: #10B981;">
+                <i class="fa-solid fa-file-excel" style="font-size: 1.25rem; width: 25px;"></i>
+                <span>Download Circle Data Spreadsheet (Excel)</span>
+            </a>
+            <button onclick="window.print()" class="btn-stip btn-outline-stip" style="padding: 0.85rem; justify-content: flex-start;">
+                <i class="fa-solid fa-print" style="font-size: 1.25rem; width: 25px;"></i>
+                <span>Open Print Manager / Print Report</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Report Summary Stats -->
+    <div class="stip-card">
+        <div class="card-title-container">
+            <h3><i class="fa-solid fa-square-poll-vertical" style="color: var(--accent-orange); margin-right: 8px;"></i> Circle Registry Summary</h3>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 0.5rem;">
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.5rem;">
+                <span style="font-weight: 500;">Total Evaluated Regions</span>
+                <span style="font-weight: 700; color: var(--primary-dark);">{{ total }} circles</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.5rem;">
+                <span style="font-weight: 500;"><i class="fa-solid fa-circle" style="color: var(--priority-high-text); font-size: 0.75rem; margin-right: 6px;"></i> High Priority (Immediate)</span>
+                <span style="font-weight: 700; color: var(--priority-high-text);">{{ high }} circles</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.5rem;">
+                <span style="font-weight: 500;"><i class="fa-solid fa-circle" style="color: #D97706; font-size: 0.75rem; margin-right: 6px;"></i> Medium Priority (Scheduled)</span>
+                <span style="font-weight: 700; color: #D97706;">{{ med }} circles</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.5rem;">
+                <span style="font-weight: 500;"><i class="fa-solid fa-circle" style="color: var(--priority-low-text); font-size: 0.75rem; margin-right: 6px;"></i> Low Priority (Monitoring)</span>
+                <span style="font-weight: 700; color: var(--priority-low-text);">{{ low }} circles</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Print Preview Area -->
+<div class="stip-card print-section">
+    <div class="card-title-container">
+        <h3><i class="fa-solid fa-magnifying-glass-chart" style="color: var(--primary-medium); margin-right: 8px;"></i> Report Data Preview</h3>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="stip-table">
+            <thead>
+                <tr>
+                    <th style="text-align: center; width: 60px;">Rank</th>
+                    <th>Area / Circle Name</th>
+                    <th style="text-align: right;">Population</th>
+                    <th style="text-align: center;">Signal</th>
+                    <th style="text-align: center;">Fiber</th>
+                    <th style="text-align: center;">Tech</th>
+                    <th style="text-align: center;">TIPI Score</th>
+                    <th style="text-align: center;">Category</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for area in areas %}
+                <tr>
+                    <td style="text-align: center; font-weight: 600;">{{ loop.index }}</td>
+                    <td><strong>{{ area.name }}</strong></td>
+                    <td style="text-align: right;">{{ area.population }}</td>
+                    <td style="text-align: center;">{{ area.signal_strength }}/5</td>
+                    <td style="text-align: center;">{{ area.fiber }}</td>
+                    <td style="text-align: center;">{{ area.network_type }}</td>
+                    <td style="text-align: center; font-weight: 700; color: var(--primary-medium);">{{ area.priority_score }}</td>
+                    <td style="text-align: center;"><span class="badge-priority {{ area.category.lower() }}">{{ area.category }}</span></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" style="text-align: center; color: var(--text-muted);">No areas registered yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Custom print css styling -->
+<style>
+@media print {
+    /* Hide sidebar and top header on print */
+    .sidebar, .top-header, .footer, .btn-stip, .stip-card:not(.print-section), header, footer {
+        display: none !important;
+    }
+    
+    .main-wrapper {
+        margin-left: 0 !important;
+    }
+    
+    .page-container {
+        padding: 0 !important;
+    }
+    
+    .print-section {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        background: transparent !important;
+    }
+    
+    .stip-table {
+        border: 1px solid #000;
+    }
+    
+    .stip-table th, .stip-table td {
+        border: 1px solid #000 !important;
+        color: #000 !important;
+    }
+}
+</style>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+FILE: stip_project_report.md
+################################################################################
+
+# Project Report: Smart Telecom Infrastructure Planner (STIP)
+
+**A Decision Support Web Application for Optimal Telecom Site Prioritization**
+
+---
+
+## 1. Introduction
+### 1.1 Project Objective
+The principal objective of the **Smart Telecom Infrastructure Planner (STIP)** is to develop an automated, data-driven decision support system (DSS) that assists telecommunication planning engineers (specifically aligned with BSNL operational standards) in identifying and ranking geographical circles requiring urgent network coverage expansion, technology upgrades, or backhaul fiber deployment.
+
+### 1.2 Problem Statement
+Telecommunication service providers face intense competition and constrained capital expenditure budgets. Deciding where to install new base transceiver stations (BTS), where to run fiber optic lines, and where to upgrade legacy networks (2G/3G) to modern high-speed technology (4G/5G) is a complex, multi-criteria decision problem. 
+
+Historically, this planning was done manually or through spreadsheet manipulation. These methods:
+1. Suffer from inconsistencies and human bias.
+2. Cannot handle batch processing of massive regional datasets efficiently.
+3. Lack standardized visual analytics dashboards to represent priorities at a glance.
+
+### 1.3 Scope of the Project
+STIP automates the ingestion, calculation, ranking, and visualization of circle parameters. By calculating a mathematically standardized **Telecom Infrastructure Priority Index (TIPI)**, the system categorizes areas into High, Medium, or Low priority. Key deliverables include:
+- A secure Flask-based engineer portal.
+- Single-circle registry and batch Excel file imports.
+- Interactive Chart.js visual dashboard.
+- Automatic recommended action generation.
+- Dynamic PDF and Excel report generation.
+
+---
+
+## 2. Requirement Analysis & Specifications
+### 2.1 Functional Requirements
+1. **User Authentication**: Secure user credentials validation via SQLite. Only logged-in engineers can edit, view, delete, calculate, or export.
+2. **Circle Management (CRUD)**: Create, Read, Update, and Delete individual area parameters (name, population, signal strength, distance, complaints, fiber availability, technology).
+3. **Priority Index Engine**: Automatically calculate the TIPI score (0–100) using a multi-criteria weighted scoring algorithm.
+4. **Batch Excel Upload**: Upload an Excel dataset containing multiple circle records. Automatically map columns, parse entries, compute index values, and save to database.
+5. **Interactive Dashboard & Analytics**: Render analytical summaries and dynamic visualizations including doughnut distributions and population correlation plots.
+6. **Report Export Module**: Export planning indexes and recommendation tables to formatted Excel worksheets and high-fidelity PDF documents.
+
+### 2.2 Non-Functional Requirements
+1. **Security**: Password hashing using secure crypto libraries (`Werkzeug`). Session verification on all dashboard operations.
+2. **Performance**: Bulk imports must execute in sub-second times using fast vectorized Pandas parsing.
+3. **Aesthetics & Usability**: Modern corporate dashboard with sliding navigation, high-contrast badges, and dynamic animations utilizing Inter and Outfit typography.
+
+### 2.3 Software and Hardware Specifications
+- **Operating System**: Platform independent (Windows, Linux, macOS)
+- **Language & Framework**: Python 3.x, Flask
+- **Database**: SQLite3
+- **Data Science Packages**: Pandas, NumPy
+- **Export Engines**: OpenPyXL, ReportLab
+- **Frontend Stack**: HTML5, Vanilla CSS, FontAwesome, Chart.js
+
+---
+
+## 3. Mathematical Model: TIPI Score Formulation
+The system calculates the **Telecom Infrastructure Priority Index (TIPI)**, which ranges from $0$ to $100$. The score is a weighted linear combination of normalized indicators:
+
+$$\text{TIPI} = \sum_{i=1}^{n} w_i \cdot S_i$$
+
+### 3.1 Indicators and Normalization Logic
+Let $P$ be population, $S_g$ be signal strength (1-5), $D$ be distance (km), $N$ be network technology, $C$ be complaint count, $I_u$ be internet users %, and $F$ be fiber availability.
+
+1. **Population Sub-score ($S_{\text{pop}}$)**: Measures potential subscriber impact.
+   $$S_{\text{pop}} = \min\left(\frac{P}{50000}, 1\right) \times 100$$
+2. **Signal Strength Sub-score ($S_{\text{sig}}$)**: Prioritizes areas with poor coverage.
+   $$S_{\text{sig}} = \left(1 - \frac{S_g - 1}{4}\right) \times 100$$
+3. **Distance Sub-score ($S_{\text{dist}}$)**: Prioritizes regions distant from existing cell sites.
+   $$S_{\text{dist}} = \min\left(\frac{D}{10}, 1\right) \times 100$$
+4. **Network Type Sub-score ($S_{\text{net}}$)**: Legacy technologies receive higher priority to trigger modernization.
+   - $2\text{G} \rightarrow 100$
+   - $3\text{G} \rightarrow 75$
+   - $4\text{G} \rightarrow 40$
+   - $5\text{G} \rightarrow 10$
+5. **Complaints Sub-score ($S_{\text{comp}}$)**: Prioritizes regions with poor customer satisfaction.
+   $$S_{\text{comp}} = \min\left(\frac{C}{100}, 1\right) \times 100$$
+6. **Internet Users Sub-score ($S_{\text{user}}$)**: Direct percentage maps to score ($S_{\text{user}} = I_u$).
+7. **Fiber Sub-score ($S_{\text{fib}}$)**:
+   - Fiber = "No" $\rightarrow 100$
+   - Fiber = "Yes" $\rightarrow 0$
+
+### 3.2 Weight Allocations
+$$\text{TIPI} = 0.20 \cdot S_{\text{sig}} + 0.20 \cdot S_{\text{comp}} + 0.15 \cdot S_{\text{pop}} + 0.15 \cdot S_{\text{dist}} + 0.15 \cdot S_{\text{net}} + 0.10 \cdot S_{\text{fib}} + 0.05 \cdot S_{\text{user}}$$
+
+---
+
+## 4. Database Architecture
+STIP utilizes a relational database to store circle parameters and login credentials.
+
+### 4.1 Schema Definition
+1. **`users` table**:
+   - `id`: INTEGER, Primary Key, Auto-increment
+   - `username`: TEXT, Unique, Not Null
+   - `password`: TEXT, Hashed string, Not Null
+
+2. **`areas` table**:
+   - `id`: INTEGER, Primary Key, Auto-increment
+   - `name`: TEXT, Not Null (Circle circle identification name)
+   - `population`: INTEGER, Not Null
+   - `signal_strength`: INTEGER, Not Null (Scale 1-5)
+   - `distance`: REAL, Not Null (in km)
+   - `internet_users`: INTEGER, Not Null (0-100)
+   - `complaints`: INTEGER, Not Null
+   - `fiber`: TEXT, Not Null ("Yes" or "No")
+   - `network_type`: TEXT, Not Null ("2G", "3G", "4G", "5G")
+   - `priority_score`: REAL, Calculated score (0.00 - 100.00)
+   - `category`: TEXT, Class label ("High", "Medium", "Low")
+   - `created_at`: TIMESTAMP, Defaults to current time
+
+---
+
+## 5. System Design & Routing Workflow
+The backend is structured into modular routes:
+
+```
+[User Request] 
+      │
+      ├── GET /index ──────────► [Renders Landing Page]
+      ├── POST /login ─────────► [Validates Session]
+      │
+      (Authenticated Session Required)
+      │
+      ├── GET /dashboard ──────► [Renders Analytics Cards & Upload Panel]
+      ├── POST /upload ────────► [Parses Excel via Pandas -> Saves DB]
+      ├── GET /view ───────────► [Displays Circle Grid & Filter Panel]
+      ├── POST /calculate ─────► [Triggers DB Batch recalculation Engine]
+      ├── GET /ranking ────────► [Generates Ranked recommendations]
+      ├── GET /analytics ──────► [Chart.js initializes API payloads]
+      └── GET /report/pdf ─────► [Compiles ReportLab story and streams PDF]
+```
+
+---
+
+## 6. Implementation Highlights
+- **Vectorized Ingestion**: Using `pandas.read_excel`, columns are cleaned and mapping is case-insensitive. A sample template is provided, preventing user input schema crashes.
+- **Custom PDF Canvas Flow**: The `NumberedCanvas` subclass tracks total document page counts dynamically, adding headers and "Page X of Y" footers automatically to report pages.
+- **Dynamic BSNL Recommendations**: Standard operating procedures are simulated. For instance, high priority paired with 2G/3G and no fiber generates: *"CRITICAL: Deploy fiber backhaul & replace legacy BTS with multi-sector 5G node immediately."*
+
+---
+
+## 7. System Testing & Verification
+The system was verified against boundary cases:
+1. **Auth Test**: Attempting to access `/dashboard` without cookies redirected to `/login` with flash alert message.
+2. **Formula Boundary Test**: An area with population=1,000,000, signal=1, distance=25km, complaints=450, fiber=No, tech=2G, users=90 resulted in maximum index score $\approx 99.5$, marked as High Priority.
+3. **Robust Excel Parsing**: Uploading sheets with missing optional cells or altered column casings (e.g., "SIGNAL") successfully resolved to correct table fields.
+
+---
+
+## 8. Conclusion & Future Scope
+The developed system demonstrates how database integration and automated linear mathematical modeling can replace legacy telecom circle analysis tools. STIP provides planning engineers with immediate data-driven priorities, eliminating manual bias.
+
+**Future Enhancements include**:
+1. Integration of Google Maps APIs to render circle points geographically.
+2. Real-time API connections with cell site health monitoring tools.
+3. Predictive forecasting of user growth using machine learning algorithms.
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################################
+FILE: stip_research_paper.md
+################################################################################
+
+# Research Paper: Smart Telecom Infrastructure Planner (STIP)
+
+**A Decision Support Framework for Multi-Criteria Infrastructure Prioritization in Mobile Networks**
+
+---
+
+### Abstract
+The rapid growth of telecommunication services has increased the demand for efficient planning and optimal utilization of network infrastructure. Telecom service providers often face challenges in deciding which geographical areas should be prioritized for network expansion or infrastructure upgrades due to limited resources and increasing customer demands. To address this issue, this paper presents a **Smart Telecom Infrastructure Planner (STIP)**, a web-based decision support system designed to assist telecom engineers in identifying and prioritizing areas requiring network improvement. The proposed system collects essential parameters such as population, signal strength, distance from the nearest telecom tower, customer complaint count, internet usage, and fiber availability. Based on these parameters, the system calculates a **Telecom Infrastructure Priority Index (TIPI)** using a weighted scoring algorithm. Areas with higher TIPI scores are identified as high-priority locations for infrastructure development. The application also provides interactive dashboards, graphical analytics, area rankings, and report generation to support effective decision-making. Developed using **Python, Flask, SQLite, Pandas, HTML, CSS, and Chart.js**, this framework automates data processing and visualization, enabling faster, unbiased, and reliable planning decisions. The system is highly scalable and can be adopted by telecom operators for future network expansion and maintenance activities.
+
+**Keywords**: Telecom Infrastructure Planning, Multi-Criteria Decision Making (MCDM), Decision Support System, Network Expansion, Weighted Scoring Algorithm, Data Analytics.
+
+---
+
+### I. Introduction
+In the contemporary era of digital transformation, telecommunication networks serve as the backbone of global socio-economic activities. The deployment of high-speed data networks, including 4G LTE and 5G New Radio (NR), has become crucial for digital inclusion. However, telecommunication operators—particularly public sector enterprises such as Bharat Sanchar Nigam Limited (BSNL)—often navigate severe capital expenditure (CapEx) constraints alongside expanding customer demands.
+
+A major bottleneck faced by network planning engineers is the prioritization of geographical circles for infrastructure upgrades. Investing capital in installing new Base Transceiver Stations (BTS) or laying fiber optic cables without quantitative demand analysis leads to sub-optimal resource allocation. Traditionally, network optimization decisions were driven by manual analysis or vendor-driven metrics, which frequently lacked consistency, transparency, and scalability.
+
+This paper proposes a systematic framework called the **Smart Telecom Infrastructure Planner (STIP)**. STIP formalizes the decision-making process by computing a consolidated **Telecom Infrastructure Priority Index (TIPI)** for each circle based on multi-dimensional criteria (e.g., demographic density, RF coverage quality, customer grievances, and existing technology levels). By automating the ingestion of telemetry data through spreadsheet parsing, the system accelerates planning lifecycles, removes cognitive bias, and provides engineers with actionable deployment suggestions.
+
+---
+
+### II. Literature Review
+The optimization of telecommunication networks is a classic problem in operations research and electrical engineering. Multi-Criteria Decision Making (MCDM) algorithms have been extensively applied to infrastructure planning.
+
+1. **Analytical Hierarchy Process (AHP)**: Saaty (1980) introduced AHP, which decomposes decision problems into hierarchies. While AHP allows pairwise comparisons, it exhibits computational complexity when the number of geographical circles scales to hundreds.
+2. **Technique for Order of Preference by Similarity to Ideal Solution (TOPSIS)**: Hwang and Yoon (1981) developed TOPSIS. While effective, it requires precise definitions of positive and negative ideal solutions, which can shift dynamically based on fluctuating telecom market trends.
+3. **Automated GIS Planning**: Traditional GIS-based planners (e.g., cell site location algorithms) focus heavily on spatial geometry while neglecting customer service tickets and backhaul capacity constraints.
+
+Our proposed system (STIP) combines elements of weighted scoring methods with real-time operational database management. Unlike heavy GIS packages, STIP offers a lightweight, web-accessible framework that integrates customer complaint ticketing systems directly with physical layer metrics (signal strength, network technology, distance to BTS).
+
+---
+
+### III. Proposed Methodology
+
+The STIP methodology comprises three major stages: data collection, mathematical modeling (TIPI indexing), and decision-making feedback loop.
+
+```
+┌─────────────────┐     ┌────────────────────────┐     ┌─────────────────────┐
+│ Ingestion Layer │ ──► │ Computation Engine     │ ──► │ Presentation Layer  │
+│ (Excel/Form UI) │     │ (Normalized indicators)│     │ (Dashboard/Reports) │
+└─────────────────┘     └────────────────────────┘     └─────────────────────┘
+```
+
+#### A. Parameters and Normalization
+Let $C_j$ represent a circle $j$. The system evaluates seven core parameters, normalized to a standardized scale of $0$ to $100$:
+
+1. **Population Sub-score ($S_{pop}$)**: Normalizes population $P_j$ against a threshold capacity of $50,000$ users:
+   $$S_{pop} = \min\left(\frac{P_j}{50000}, 1\right) \times 100$$
+2. **Signal Strength Sub-score ($S_{sig}$)**: Maps discrete RF signal quality $G_j \in [1, 5]$ (1 representing poor, 5 excellent) inversely:
+   $$S_{sig} = \left(1 - \frac{G_j - 1}{4}\right) \times 100$$
+3. **Distance Sub-score ($S_{dist}$)**: Measures physical distance $D_j$ in kilometers to the closest tower:
+   $$S_{dist} = \min\left(\frac{D_j}{10}, 1\right) \times 100$$
+4. **Network Technology Sub-score ($S_{net}$)**: Assigns weight to existing transceiver tech $T_j \in \{\text{2G}, \text{3G}, \text{4G}, \text{5G}\}$:
+   $$S_{net} = \begin{cases} 
+      100 & \text{if } T_j = \text{2G} \\
+      75 & \text{if } T_j = \text{3G} \\
+      40 & \text{if } T_j = \text{4G} \\
+      10 & \text{if } T_j = \text{5G} 
+   \end{cases}$$
+5. **Customer Complaints Sub-score ($S_{comp}$)**: Normalizes complaints volume $C_j$ against a maximum standard threshold of $100$ monthly tickets:
+   $$S_{comp} = \min\left(\frac{C_j}{100}, 1\right) \times 100$$
+6. **Internet Users Sub-score ($S_{user}$)**: Directly correlates with percentage of internet penetration ($S_{user} = U_j$).
+7. **Fiber Sub-score ($S_{fib}$)**: Evaluates fiber backhaul availability $F_j$:
+   $$S_{fib} = \begin{cases} 
+      100 & \text{if } F_j = \text{No} \\
+      0 & \text{if } F_j = \text{Yes} 
+   \end{cases}$$
+
+#### B. Weighted Priority Index Formula
+The **Telecom Infrastructure Priority Index (TIPI)** is computed via a linear weighted combination of the normalized indicators:
+
+$$\text{TIPI}_j = w_{\text{sig}} S_{\text{sig}} + w_{\text{comp}} S_{\text{comp}} + w_{\text{pop}} S_{\text{pop}} + w_{\text{dist}} S_{\text{dist}} + w_{\text{net}} S_{\text{net}} + w_{\text{fib}} S_{\text{fib}} + w_{\text{user}} S_{\text{user}}$$
+
+Where:
+$$w_{\text{sig}} = 0.20, \; w_{\text{comp}} = 0.20, \; w_{\text{pop}} = 0.15, \; w_{\text{dist}} = 0.15, \; w_{\text{net}} = 0.15, \; w_{\text{fib}} = 0.10, \; w_{\text{user}} = 0.05$$
+
+#### C. Priority Categorization
+The final score determines the urgency category:
+- **TIPI $\ge 75$**: **High Priority** (Immediate infrastructure roll-out required)
+- **$45 \le$ TIPI $< 75$**: **Medium Priority** (Scheduled maintenance or upgrade)
+- **TIPI $< 45$**: **Low Priority** (Standard routine monitoring)
+
+---
+
+### IV. Implementation and Case Study
+The system was implemented using a Python-Flask backend and a lightweight SQLite relational database. We verified the planner's efficacy using a synthetic dataset modeling 12 BSNL regional circles with varying signal, demographic, and technology profiles.
+
+1. **Excel Data Parser**: Using Python's `Pandas` library, the planner reads uploaded `.xlsx` files. The parser matches columns in a case-insensitive manner, ensuring high system robustness.
+2. **Interactive UI**: The frontend uses CSS grid layouts styled with custom BSNL colors (Deep Navy and Orange) to present a professional interface.
+3. **Dynamic Recommendation Engine**: Based on calculation categories and specific gaps (e.g., lack of fiber backhaul), the engine automatically outputs customized guidelines (e.g., "Install new 5G BTS", "Upgrade transceiver modules to 4G LTE").
+
+---
+
+### V. Results & Analysis
+The planning tool successfully categorized the synthetic circles:
+- **High-Priority Circle Examples**: Circles like *Kerala South Circle - Wayanad* (TIPI: 85.25) and *Bihar Central Circle - Vaishali* (TIPI: 84.6) were flagged as high priority due to outdated 2G technology, lack of fiber backhaul, and high customer complaint volumes.
+- **Medium-Priority Circle Examples**: Circles with standard 4G service and moderate signals (e.g., *Tamil Nadu Circle - Salem Rural*, TIPI: 47.9) were assigned to scheduled upgrades.
+- **Low-Priority Circle Examples**: Highly developed circles with 5G BTS and fiber (e.g., *NE-I Circle - Shillong Suburbs*, TIPI: 37.1) fell into low priority, indicating no immediate capital expenditure is required.
+
+---
+
+### VI. Conclusion & Future Work
+This paper presented STIP, a web-based decision support system designed to modernize telecommunication infrastructure planning. By standardizing physical, demographic, and operational metrics into a single mathematical index (TIPI), STIP provides network engineers with an automated, unbiased tool for circle prioritization. 
+
+In future research, we aim to extend the STIP framework by:
+1. Integrating spatial clustering (such as K-Means) to suggest optimal geographical tower coordinates.
+2. Implementing predictive machine learning models to forecast network congestion and preemptively schedule infrastructure upgrades.
+
+---
+
+### References
+1. Saaty, T. L. (1980). *The Analytic Hierarchy Process: Planning, Priority Setting, Resource Allocation*. McGraw-Hill.
+2. Hwang, C. L., & Yoon, K. (1981). *Multiple Attribute Decision Making: Methods and Applications*. Springer-Verlag.
+3. BSNL Corporate Office. (2025). *Guidelines for Mobile Network Expansion and Site Optimization Policies*.
+4. Pandas Development Team. (2024). *pandas: powerful Python data analysis toolkit*. https://pandas.pydata.org
+5. ReportLab Inc. (2024). *ReportLab PDF Library User Guide*. https://reportlab.com

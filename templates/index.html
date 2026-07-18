@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome - Smart Telecom Infrastructure Planner{% endblock %}
+
+{% block content %}
+<div class="landing-hero" style="border-radius: 12px; margin-bottom: 2rem;">
+    <h1>Smart Telecom Infrastructure Planner (STIP)</h1>
+    <p>An advanced analytical decision support system designed for telecom circles to prioritize geographical regions for infrastructural roll-outs, capacity upgrades, and backhaul expansion.</p>
+    <div>
+        {% if session.get('user_id') %}
+        <a href="{{ url_for('dashboard') }}" class="btn-stip btn-accent-stip" style="font-size: 1.1rem; padding: 0.8rem 2rem;">
+            <i class="fa-solid fa-gauge-high"></i> Go to Dashboard
+        </a>
+        {% else %}
+        <a href="{{ url_for('login') }}" class="btn-stip btn-accent-stip" style="font-size: 1.1rem; padding: 0.8rem 2rem;">
+            <i class="fa-solid fa-sign-in-alt"></i> Access Engineer Portal
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="stip-card">
+    <div class="card-title-container">
+        <h3><i class="fa-solid fa-circle-info" style="color: var(--accent-orange); margin-right: 8px;"></i> Project Abstract & Scope</h3>
+    </div>
+    <p style="font-size: 1.05rem; margin-bottom: 1.25rem;">
+        The rapid growth of telecommunication services has increased the demand for efficient planning and optimal utilization of network infrastructure. Telecom service providers often face challenges in deciding which geographical areas should be prioritized for network expansion or infrastructure upgrades due to limited resources and increasing customer demands.
+    </p>
+    <p style="font-size: 1.05rem;">
+        To address this issue, <b>STIP</b> automates data processing and visualization, providing telecom engineers with a data-driven approach to prioritize areas requiring network improvement. The system leverages the <b>Telecom Infrastructure Priority Index (TIPI)</b> score calculated via a weighted multi-criteria algorithm to identify circles in critical need of expansion, optimizing resource allocation.
+    </p>
+</div>
+
+<div class="features-section">
+    <h2 style="text-align: center; margin-bottom: 1.5rem;">Key Core Modules</h2>
+    <div class="features-grid">
+        <div class="feature-box">
+            <i class="fa-solid fa-map-location-dot"></i>
+            <h3>Area Management</h3>
+            <p>Maintain detailed geographical profiles of circles including population demographics, transceiver status, and fiber details.</p>
+        </div>
+        <div class="feature-box">
+            <i class="fa-solid fa-calculator"></i>
+            <h3>Priority Calculator</h3>
+            <p>Runs a normalized, weighted scoring model mapping multi-dimensional factors to a consolidated TIPI priority index score (0-100).</p>
+        </div>
+        <div class="feature-box">
+            <i class="fa-solid fa-chart-column"></i>
+            <h3>Interactive Analytics</h3>
+            <p>Rich graphic charts tracking technology distribution, complaint heatmaps, and correlation plots between populations and index values.</p>
+        </div>
+        <div class="feature-box">
+            <i class="fa-solid fa-file-pdf"></i>
+            <h3>Report Generation</h3>
+            <p>Export planning indexes, circle statistics, and concrete infrastructure recommendations to Excel, PDF, or direct Print sheets.</p>
+        </div>
+    </div>
+</div>
+
+<div class="stip-card" style="background-color: var(--primary-dark); color: #fff;">
+    <h3 style="color: #fff; margin-bottom: 1rem;"><i class="fa-solid fa-gears" style="color: var(--accent-orange); margin-right: 8px;"></i> Decision Support Parameters</h3>
+    <p style="margin-bottom: 1.5rem; color: var(--primary-light);">The TIPI algorithm evaluates the following weights to determine priority scores:</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+        <div style="background-color: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; border-left: 3px solid var(--accent-orange);">
+            <strong style="color: #fff;">Customer Complaints (20%)</strong>
+            <p style="font-size: 0.85rem; color: var(--primary-light); margin-top: 0.25rem;">Prioritizes regions with high ticket volumes and poor user experience.</p>
+        </div>
+        <div style="background-color: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; border-left: 3px solid var(--accent-orange);">
+            <strong style="color: #fff;">Signal Strength (20%)</strong>
+            <p style="font-size: 0.85rem; color: var(--primary-light); margin-top: 0.25rem;">Inverse-weighted to prioritize poor RF coverage zones.</p>
+        </div>
+        <div style="background-color: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; border-left: 3px solid var(--accent-orange);">
+            <strong style="color: #fff;">Circle Population (15%)</strong>
+            <p style="font-size: 0.85rem; color: var(--primary-light); margin-top: 0.25rem;">Maximizes ROI by weighting highly populated rural and urban zones.</p>
+        </div>
+        <div style="background-color: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; border-left: 3px solid var(--accent-orange);">
+            <strong style="color: #fff;">Network Technology (15%)</strong>
+            <p style="font-size: 0.85rem; color: var(--primary-light); margin-top: 0.25rem;">Weights legacy networks (2G/3G) to target 4G/5G upgrade cycles.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

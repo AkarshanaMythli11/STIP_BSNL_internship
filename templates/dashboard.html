@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Smart Telecom Infrastructure Planner{% endblock %}
+
+{% block content %}
+<div class="metrics-grid">
+    <!-- Total Areas -->
+    <div class="metric-card total-a">
+        <div class="metric-icon">
+            <i class="fa-solid fa-map-location-dot"></i>
+        </div>
+        <div class="metric-details">
+            <h4>Total Areas</h4>
+            <div class="metric-value">{{ total_areas }}</div>
+        </div>
+    </div>
+    <!-- High Priority -->
+    <div class="metric-card high-p">
+        <div class="metric-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div class="metric-details">
+            <h4>High Priority</h4>
+            <div class="metric-value">{{ high_count }}</div>
+        </div>
+    </div>
+    <!-- Medium Priority -->
+    <div class="metric-card med-p">
+        <div class="metric-icon">
+            <i class="fa-solid fa-circle-exclamation"></i>
+        </div>
+        <div class="metric-details">
+            <h4>Medium Priority</h4>
+            <div class="metric-value">{{ med_count }}</div>
+        </div>
+    </div>
+    <!-- Low Priority -->
+    <div class="metric-card low-p">
+        <div class="metric-icon">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div class="metric-details">
+            <h4>Low Priority</h4>
+            <div class="metric-value">{{ low_count }}</div>
+        </div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+    <!-- Excel upload block -->
+    <div class="stip-card">
+        <div class="card-title-container">
+            <h3><i class="fa-solid fa-file-excel" style="color: #10B981; margin-right: 8px;"></i> Batch Upload Circle Data</h3>
+            <a href="{{ url_for('download_template') }}" class="btn-stip btn-outline-stip btn-sm-stip" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">
+                <i class="fa-solid fa-download"></i> Download Template
+            </a>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            Upload an Excel spreadsheet with circle parameters to automatically calculate TIPI priority indexes and bulk import data.
+        </p>
+        <form action="{{ url_for('upload_file') }}" method="POST" enctype="multipart/form-data">
+            <div class="upload-zone" onclick="document.getElementById('excelFile').click()">
+                <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                <h5 id="upload-status-text">Click to choose Excel sheet</h5>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Supports .xlsx and .xls formats</p>
+                <input type="file" id="excelFile" name="file" accept=".xlsx, .xls" style="display: none;" onchange="updateUploadLabel(this)">
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+                <button type="submit" class="btn-stip btn-accent-stip">
+                    <i class="fa-solid fa-upload"></i> Import and Recalculate
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Quick Navigation -->
+    <div class="stip-card">
+        <div class="card-title-container">
+            <h3><i class="fa-solid fa-compass" style="color: var(--accent-orange); margin-right: 8px;"></i> Quick Navigation</h3>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.5rem;">
+            <a href="{{ url_for('add_area') }}" class="btn-stip btn-primary-stip" style="padding: 1rem; flex-direction: column; gap: 0.5rem; height: 100%;">
+                <i class="fa-solid fa-plus-circle" style="font-size: 1.5rem;"></i>
+                <span>Add Single Area</span>
+            </a>
+            <a href="{{ url_for('view_areas') }}" class="btn-stip btn-primary-stip" style="padding: 1rem; flex-direction: column; gap: 0.5rem; height: 100%;">
+                <i class="fa-solid fa-list-check" style="font-size: 1.5rem;"></i>
+                <span>View All Circles</span>
+            </a>
+            <a href="{{ url_for('ranking') }}" class="btn-stip btn-primary-stip" style="padding: 1rem; flex-direction: column; gap: 0.5rem; height: 100%;">
+                <i class="fa-solid fa-ranking-star" style="font-size: 1.5rem;"></i>
+                <span>Priority Rankings</span>
+            </a>
+            <a href="{{ url_for('analytics') }}" class="btn-stip btn-primary-stip" style="padding: 1rem; flex-direction: column; gap: 0.5rem; height: 100%;">
+                <i class="fa-solid fa-chart-pie" style="font-size: 1.5rem;"></i>
+                <span>View Analytics</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 1.5rem;">
+    <!-- Top Priority Areas -->
+    <div class="stip-card">
+        <div class="card-title-container">
+            <h3><i class="fa-solid fa-fire" style="color: var(--priority-high-text); margin-right: 8px;"></i> Critical Action Areas</h3>
+            <span class="badge-priority high" style="padding: 0.15rem 0.5rem; font-size: 0.7rem;">Top 5 Urgent</span>
+        </div>
+        <div class="table-responsive">
+            <table class="stip-table">
+                <thead>
+                    <tr>
+                        <th>Area Name</th>
+                        <th style="text-align: center;">Tech</th>
+                        <th style="text-align: center;">TIPI Score</th>
+                        <th style="text-align: center;">Category</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for area in top_priority %}
+                    <tr>
+                        <td><strong>{{ area.name }}</strong></td>
+                        <td style="text-align: center;"><span class="tech-tag net-{{ area.network_type.lower() }}">{{ area.network_type }}</span></td>
+                        <td style="text-align: center; font-weight: 700; color: var(--primary-medium);">{{ area.priority_score }}</td>
+                        <td style="text-align: center;"><span class="badge-priority {{ area.category.lower() }}">{{ area.category }}</span></td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: var(--text-muted);">No areas registered yet. Click Add Area or upload Excel data.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent Circles -->
+    <div class="stip-card">
+        <div class="card-title-container">
+            <h3><i class="fa-solid fa-clock-rotate-left" style="color: var(--primary-medium); margin-right: 8px;"></i> Recently Registered</h3>
+            <a href="{{ url_for('view_areas') }}" style="font-size: 0.8rem; font-weight: 600; color: var(--primary-medium); text-decoration: none;">View All</a>
+        </div>
+        <div class="table-responsive">
+            <table class="stip-table">
+                <thead>
+                    <tr>
+                        <th>Area Name</th>
+                        <th style="text-align: center;">Signal</th>
+                        <th style="text-align: center;">Complaints</th>
+                        <th style="text-align: center;">Fiber</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for area in recent_areas %}
+                    <tr>
+                        <td><strong>{{ area.name }}</strong></td>
+                        <td style="text-align: center;">
+                            {% for i in range(area.signal_strength) %}<i class="fa-solid fa-signal" style="color: #10B981; font-size: 0.8rem;"></i>{% endfor %}
+                            {% for i in range(5 - area.signal_strength) %}<i class="fa-solid fa-signal" style="color: #cbd5e0; font-size: 0.8rem;"></i>{% endfor %}
+                        </td>
+                        <td style="text-align: center; font-weight: 600;">{{ area.complaints }}</td>
+                        <td style="text-align: center;"><span class="fiber-badge {{ area.fiber.lower() }}">{{ area.fiber }}</span></td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: var(--text-muted);">No areas registered yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function updateUploadLabel(input) {
+    const statusText = document.getElementById('upload-status-text');
+    if (input.files && input.files.length > 0) {
+        statusText.innerHTML = `<i class="fa-solid fa-file-circle-check" style="color: #10B981;"></i> Chosen File: <strong>${input.files[0].name}</strong>`;
+        statusText.parentElement.style.borderColor = "#10B981";
+        statusText.parentElement.style.backgroundColor = "rgba(16, 185, 129, 0.05)";
+    } else {
+        statusText.innerText = "Click to choose Excel sheet";
+    }
+}
+</script>
+{% endblock %}

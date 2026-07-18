@@ -1,0 +1,43 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+.env/
+.venv/
+
+# SQLite database (will be auto-generated on first run)
+database.db
+
+# Uploaded Excel files
+uploads/
+
+# Generated reports
+reports/
+
+# Environment variables
+.env
+*.env
+
+# IDE/Editor folders
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
