@@ -2,6 +2,12 @@
 
 > A professional, web-based Decision Support System for Telecom Engineers to identify and prioritize areas requiring network infrastructure upgrades — built as an operational planning tool aligned with BSNL standards.
 
+[![Live Demo](https://img.shields.io/badge/🚀%20Live%20Demo-Render-46E3B7?style=for-the-badge)](https://stip-bsnl-internship.onrender.com)
+
+> 🌐 **Live App:** [https://stip-bsnl-internship.onrender.com](https://stip-bsnl-internship.onrender.com)
+> 
+> ⚠️ *Hosted on Render free tier — the server may take ~30 seconds to wake up on first visit after inactivity.*
+
 ---
 
 ## 🔍 Abstract
@@ -181,13 +187,22 @@ OK
 
 ---
 
-## 🚀 Deployment Notes
+## 🚀 Deployment
 
-This project is built for local development. For production deployment:
-- Replace SQLite with PostgreSQL or MySQL
-- Use **Gunicorn** or **uWSGI** as the WSGI server
-- Use **Nginx** as the reverse proxy
-- Set a strong, random `SECRET_KEY` in production
+This project is **live on Render.com** (free tier):
+
+| | |
+|---|---|
+| 🌐 **Live URL** | [https://stip-bsnl-internship.onrender.com](https://stip-bsnl-internship.onrender.com) |
+| ☁️ **Platform** | [Render.com](https://render.com) |
+| 🐍 **Runtime** | Python 3.11 + Gunicorn |
+| 🗄️ **Database** | SQLite3 |
+| 🔁 **Auto-deploy** | Enabled — pushes to `master` deploy automatically |
+
+### Notes
+- Free tier servers **sleep after 15 min of inactivity** — first request may take ~30s to wake up
+- SQLite database resets on each new deploy (no persistent disk on free tier)
+- `SECRET_KEY` is set via Render environment variable (not hardcoded)
 
 ---
 
